@@ -61,6 +61,28 @@ def _smooth(u):
 
 
 # ------------------------------------------------------------------ 土台
+def _bounces(balls, memo):
+    """前のコマから向きが変わったボール（＝何かに当たって跳ね返った）の番号を返す。
+    個数が少ないあいだ、当たった瞬間に小さく音を鳴らすのに使う（何も鳴らない時間をなくす）。"""
+    out = []
+    for k, item in enumerate(balls):
+        vx, vy = item[0].velocity
+        d = math.hypot(vx, vy)
+        prev = memo.get(item[0])
+        if prev is not None and d > 1 and (prev[0] * vx + prev[1] * vy) / d < 0.85:
+            out.append(k)
+    return out
+
+
+def _remember(balls, memo):
+    """このコマの終わりの向きを覚える（割れたり戻されたりして変わった分は、跳ね返りに数えない）。"""
+    memo.clear()
+    for item in balls:
+        vx, vy = item[0].velocity
+        d = math.hypot(vx, vy) or 1.0
+        memo[item[0]] = (vx / d, vy / d)
+
+
 def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
     sp = _space(gravity=0.0)
     sp.iterations = 12
@@ -81,6 +103,7 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
     done_at = None
     lo, hi = m.get("speed", (320.0, 780.0))
     wait = m.get("wait", (0.6, 1.0))
+    memo = {}
     while True:
         t = v.t
         m["update"](t, 1.0 / v.fps)
@@ -89,6 +112,9 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
         for _ in range(n_steps):
             sp.step(dt)
         if done_at is None:
+            if len(balls) <= 10:               # 少ないうちは、跳ね返るたびに小さく鳴らす
+                for k in _bounces(balls, memo):
+                    v.audio.note(t, penta(4 + k % 6, 57), 0.15, "pluck", channel="bn", min_gap=0.08)
             born = 0
             if "kill" in m:                    # 仕掛けによっては、触れたボールが消える（最後の 1 個は消えない）
                 for item in list(balls):
@@ -156,6 +182,7 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
                 elif spd < lo:
                     a = rng.uniform(0, math.tau)
                     body.velocity = (math.cos(a) * (lo + 60), math.sin(a) * (lo + 60))
+            _remember(balls, memo)
             if len(balls) >= cap:
                 done_at = t
                 for seg in m["walls"]:
@@ -386,6 +413,7 @@ def _run_survive(v, rng, mech, lives=3, br=26.0, bottom=CY + 640, caption="Squee
     pops = []                                  # 潰された瞬間の輪 [x, y, 色, 経過, 脱落か]
     n_steps, dt = _steps(v)
     done_at = None
+    memo = {}
     while True:
         t = v.t
         m["update"](t, 1.0 / v.fps)
@@ -394,6 +422,8 @@ def _run_survive(v, rng, mech, lives=3, br=26.0, bottom=CY + 640, caption="Squee
         for _ in range(n_steps):
             sp.step(dt)
         if done_at is None:
+            for k in _bounces(balls, memo):     # 跳ね返るたびに、その色の高さの音を小さく鳴らす
+                v.audio.note(t, penta(2 + balls[k][2], 57), 0.17, "marimba", channel="bn", min_gap=0.12)
             for item in list(balls):
                 body = item[0]
                 if t >= item[4]:
@@ -449,6 +479,7 @@ def _run_survive(v, rng, mech, lives=3, br=26.0, bottom=CY + 640, caption="Squee
                 elif spd < lo:
                     a = rng.uniform(0, math.tau)
                     body.velocity = (math.cos(a) * (lo + 60), math.sin(a) * (lo + 60))
+            _remember(balls, memo)
             if len(balls) <= 1:
                 done_at = t
                 for i, mm in enumerate((60, 64, 67, 72, 76)):
