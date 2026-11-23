@@ -8,6 +8,7 @@ import sims_fill
 import sims_light
 import sims_more
 import sims_pack
+import sims_party
 import sims_ring
 import sims_squeeze
 import sims_swarm
@@ -89,6 +90,14 @@ SIMS = {
     "blackhole": {
         "run": sims_fill.run_blackhole, "length": (24, 42), "ja": "育っていくブラックホールから逃げる生き残り戦（8 色）",
         "titles": ["吸い込まれたら脱落。最後に残るのは？", "Don't fall in - last ball wins"],
+    },
+    "bomb": {
+        "run": sims_party.run_bomb, "length": (24, 40), "search": False, "ja": "爆弾まわしの生き残り戦（触れると爆弾が移る。8 色）",
+        "titles": ["爆弾を持ったまま時間切れで脱落。最後に残るのは？", "Hot potato - don't hold the bomb"],
+    },
+    "plinko": {
+        "run": sims_party.run_plinko, "length": (26, 40), "search": False, "ja": "600 個のボールを釘の板に落とす（山の形ができる）",
+        "titles": ["600個のボール、どこに落ちる？", "Where do 600 balls land?"],
     },
     "towers2": {
         "run": sims_tower.run_towers2, "length": (30, 50), "search": False, "ja": "3 つの塔の別バージョン（階ごとに 2 倍／毎秒増える／増えない）",
@@ -303,6 +312,26 @@ COPY = {
         "rule_ja": "まん中のブラックホールが育ちながらボールを引き寄せます。触れたボールは脱落。最後に残った1個が勝ち。",
         "ask_en": "Which color did you pick?", "ask_ja": "何色を選んだ？",
         "hash": ["#ballrace", "#blackhole"], "keys": ["ball race", "black hole", "survival", "ブラックホール"],
+    },
+    "bomb": {
+        "en": ["Hot potato - don't hold the bomb", "Touch to pass the bomb - last ball wins", "8 balls, 1 bomb, 7 explosions"],
+        "ja": ["爆弾を持ったまま時間切れで脱落。最後に残るのは？", "触れたら爆弾が移る。8個の生き残り戦", "8個のボールと1個の爆弾"],
+        "rule_en": "There is one bomb. The ball holding it passes it on by touching another ball. "
+                   "When the fuse runs out, the holder is out, and the bomb flies to the nearest ball. The last ball left wins.",
+        "rule_ja": "爆弾は1個だけ。持っているボールが別のボールに触れると爆弾が移ります。"
+                   "導火線が尽きたとき持っていた色が脱落し、爆弾は一番近いボールへ飛びます。最後に残った1個が勝ち。",
+        "ask_en": "Which color did you pick?", "ask_ja": "何色を選んだ？",
+        "hash": ["#ballrace", "#hotpotato"], "keys": ["ball race", "hot potato", "bomb", "survival", "爆弾"],
+    },
+    "plinko": {
+        "en": ["Where do 600 balls land?", "600 balls, 12 rows of pegs", "Drop 600 balls and watch the shape appear"],
+        "ja": ["600個のボール、どこに落ちる？", "600個のボールと12段の釘", "600個落とすと、形が現れる"],
+        "rule_en": "600 balls drop from the same spot. Every peg sends a ball left or right, and they pile up in 13 slots. "
+                   "At the end a color wave counts each slot.",
+        "rule_ja": "600個のボールを同じ場所から落とします。釘に当たるたびに左右へ分かれ、下の13個の仕切りに積もります。"
+                   "最後に色の波が1列ずつ数えます。",
+        "ask_en": "Did you guess the shape?", "ask_ja": "どんな形になると思った？",
+        "hash": ["#plinko", "#galtonboard"], "keys": ["plinko", "galton board", "satisfying", "ピンボール", "確率"],
     },
     "towers2": {
         "en": ["x2 per floor vs +82 per second vs 1,520 from the start", "3 towers, 3 rules - who breaks floor 10 first?",
