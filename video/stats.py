@@ -66,11 +66,16 @@ COMMENTS_URL = "https://www.googleapis.com/youtube/v3/commentThreads"
 
 
 def fetch_comments(token, ids, per_video=5):
-    """動画ごとの新しいコメント（本文と日付だけ。書いた人の名前は記録しない）。戻り値: {id: [(日付, 本文)]}"""
+    """動画ごとの新しいコメント（本文と日付だけ。書いた人の名前は記録しない）。戻り値: {id: [(日付, 本文)]}
+    403 が返るのは、認証のときに「コメントを読む許可」（youtube.force-ssl）を付けていないため。
+    その場合は 1 回であきらめ、{"blocked": True} を返す（ページには数だけ出る）。"""
     out = {}
     for vid in ids:
         r = requests.get(COMMENTS_URL, timeout=30, headers={"Authorization": f"Bearer {token}"}, params={
             "part": "snippet", "videoId": vid, "maxResults": per_video, "order": "time", "textFormat": "plainText"})
+        if r.status_code == 403:
+            print("comments: not permitted with the current YouTube authorization (needs youtube.force-ssl); skipped")
+            return {"blocked": True}
         if r.status_code != 200:
             print(f"comments failed for {vid}: HTTP {r.status_code}")
             continue
@@ -289,7 +294,11 @@ def render(posts, pub, ana, notes, now=None, other=None, buf=None, countries=Non
             mid = vs[len(vs) // 2] if len(vs) % 2 else (vs[len(vs) // 2 - 1] + vs[len(vs) // 2]) / 2
             pct = f"{sum(g['pct']) / len(g['pct']):.0f}%" if g["pct"] else "—"
             out.append(f"| {key} | {len(vs)} | {sum(vs) / len(vs):,.0f} | {mid:,.0f} | {pct} |")
-    if comments:
+    if comments.get("blocked"):
+        out += ["", "## 新しいコメント（YouTube）", "",
+                "コメントの本文は、いまの YouTube の許可では読めません（上の表には数だけ出ます）。"
+                "本文もここに並べたい場合は、認証をやり直して「コメントの管理」の許可を足す必要があります（任意）。"]
+    elif comments:
         out += ["", "## 新しいコメント（YouTube）", "",
                 "動画ごとに新しい順で 5 件まで。次に作る動画の手がかりにする。", ""]
         for p, vid, d, a, an in rows:
