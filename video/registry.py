@@ -4,11 +4,13 @@ import sims_3d
 import sims_arena
 import sims_board
 import sims_course
+import sims_fill
 import sims_light
 import sims_more
 import sims_pack
 import sims_ring
 import sims_squeeze
+import sims_swarm
 import sims_tower
 
 SIMS = {
@@ -51,6 +53,46 @@ SIMS = {
     "towers": {
         "run": sims_tower.run_towers, "length": (30, 55), "search": False, "ja": "条件の違う 3 つの塔。10 階を最初に壊すのは？",
         "titles": ["3つの塔、10階を最初に壊すのは？", "3 towers, 3 rules - who breaks floor 10 first?"],
+    },
+    "hexarms": {
+        "run": sims_squeeze.run_hexarms, "length": (24, 36), "ja": "六角形の中で 3 本のアームが回り、壁とのあいだで潰されたボールが 2 個に増える",
+        "titles": ["六角形の中で、潰されると2倍", "Squeezed = x2 (hexagon)"],
+    },
+    "beams": {
+        "run": sims_squeeze.run_beams, "length": (22, 42), "ja": "緑の光線に触れると 2 倍、赤の光線に触れると消える",
+        "titles": ["緑で2倍、赤で消える", "GREEN = x2, RED = gone"],
+    },
+    "rps": {
+        "run": sims_swarm.run_rps, "length": (20, 41), "ja": "グー・チョキ・パーの駒が追いかけ合い、触れた相手を仲間に変える",
+        "titles": ["グー・チョキ・パー、最後に残るのは？", "Rock Paper Scissors - which one takes over?"],
+    },
+    "colorwar2": {
+        "run": sims_arena.run_colorwar2, "length": (38, 39), "search": False, "ja": "陣取り合戦の別バージョン（大きい 1 個／速い 2 個／遅い 8 個／ふつう 4 個）",
+        "titles": ["大きい1個か、速い2個か、遅い8個か", "1 giant vs 2 fast vs 8 slow vs 4 normal"],
+    },
+    "survive": {
+        "run": sims_squeeze.run_survive, "length": (17, 30), "ja": "ローラーに潰されるたびにライフが減る生き残り戦（6 色）",
+        "titles": ["潰されたらライフ-1。最後に残るのは？", "Squeezed = -1 life. Last ball wins"],
+    },
+    "smash": {
+        "run": sims_squeeze.run_smash, "length": (20, 36), "ja": "ピストンに潰されるたびにライフが減る生き残り戦（6 色）",
+        "titles": ["叩かれたらライフ-1。最後に残るのは？", "Smashed = -1 life. Last ball wins"],
+    },
+    "fillwave": {
+        "run": sims_fill.run_fillwave, "length": (22, 40), "search": False, "ja": "形を埋め尽くしたあと、色の波が走る",
+        "titles": ["いっぱいになったら、色の波", "Wait for the wave"],
+    },
+    "blackhole": {
+        "run": sims_fill.run_blackhole, "length": (24, 42), "ja": "育っていくブラックホールから逃げる生き残り戦（8 色）",
+        "titles": ["吸い込まれたら脱落。最後に残るのは？", "Don't fall in - last ball wins"],
+    },
+    "towers2": {
+        "run": sims_tower.run_towers2, "length": (30, 50), "search": False, "ja": "3 つの塔の別バージョン（階ごとに 2 倍／毎秒増える／増えない）",
+        "titles": ["倍々か、毎秒増えるか、最初から大勢か", "x2 per floor vs +82 per second vs 1,520 from the start"],
+    },
+    "cannons": {
+        "run": sims_tower.run_cannons, "length": (30, 50), "search": False, "ja": "条件の違う 3 つの砲台。壁を最初に壊すのは？",
+        "titles": ["3つの砲台、壁を最初に壊すのは？", "3 cannons, 3 rules - who breaks the wall first?"],
     },
     "faces": {
         "run": sims_3d.run_faces, "length": (15, 30), "search": False, "heavy": True, "ja": "面の数が違う布を落として比べる（16 → 4096 面）",
@@ -174,6 +216,100 @@ COPY = {
                    "塔ごとに最初の個数と、床を壊したときの増え方が違います。",
         "ask_en": "Which tower did you pick?", "ask_ja": "どの塔を選んだ？",
         "hash": ["#simulation", "#satisfying"], "keys": ["simulation race", "exponential growth", "tower", "倍々"],
+    },
+    "hexarms": {
+        "en": ["Squeezed = x2", "1 ball, 3 arms, 6 walls", "How fast does 1 ball become 320?"],
+        "ja": ["潰されると2倍", "ボール1個、アーム3本、壁6枚", "1個が320個になるまで"],
+        "rule_en": "Three arms spin on the corners of a hexagon. A ball squeezed between an arm and a wall splits in two.",
+        "rule_ja": "六角形の角で3本のアームが回っています。アームと壁のあいだに挟まれて潰されたボールは2個に増えます。",
+        "ask_en": "How many seconds did you guess?", "ask_ja": "何秒かかると思った？",
+        "hash": ["#ballsimulation", "#asmr"], "keys": ["ball simulation", "asmr", "multiply", "ボール 増える"],
+    },
+    "beams": {
+        "en": ["GREEN = x2, RED = gone", "Can 1 ball reach 300 before the red beam gets it?", "One beam doubles, one beam deletes"],
+        "ja": ["緑で2倍、赤で消える", "赤い光線に消される前に、300個まで増える？", "増やす光線と、消す光線"],
+        "rule_en": "A ball that touches the green beam splits in two. A ball that touches the red beam disappears. "
+                   "The beams spin in opposite directions.",
+        "rule_ja": "緑の光線に触れたボールは2個に増え、赤の光線に触れたボールは消えます。2本の光線は逆向きに回っています。",
+        "ask_en": "Did you think it would make it?", "ask_ja": "300個まで行けると思った？",
+        "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "multiply", "ボール 増える"],
+    },
+    "rps": {
+        "en": ["Rock Paper Scissors - which one takes over?", "34 rocks, 34 papers, 34 scissors. One survives",
+               "Everyone chases what they beat"],
+        "ja": ["グー・チョキ・パー、最後に残るのは？", "グー34・チョキ34・パー34、残るのは1種類", "みんな、勝てる相手を追いかける"],
+        "rule_en": "Every piece chases what it beats and runs from what beats it. A touch converts the loser. "
+                   "It ends when only one kind is left.",
+        "rule_ja": "どの駒も、勝てる相手を追いかけ、負ける相手から逃げます。触れられた側は相手の仲間に変わり、1種類だけになったら終わり。",
+        "ask_en": "Which one did you pick?", "ask_ja": "どれを選んだ？",
+        "hash": ["#simulation", "#rockpaperscissors"], "keys": ["rock paper scissors", "simulation", "battle", "じゃんけん"],
+    },
+    "colorwar2": {
+        "en": ["1 giant vs 2 fast vs 8 slow vs 4 normal", "Size, speed or numbers - which one takes the map?",
+               "One giant ball against eight slow ones"],
+        "ja": ["大きい1個か、速い2個か、遅い8個か", "大きさ・速さ・数、陣地を取るのはどれ？", "巨大な1個 対 遅い8個"],
+        "rule_en": "Each ball paints the tiles it touches. Every color plays differently: one giant fast ball, "
+                   "two fast balls, eight slow balls, or four normal ones. The biggest territory when the timer ends wins.",
+        "rule_ja": "ボールが触れたマスを自分の色に塗り替える陣取り合戦。色ごとに戦い方が違います："
+                   "巨大で速い1個／速い2個／遅い8個／ふつうの4個。時間切れで一番広い色が勝ち。",
+        "ask_en": "Which color did you pick?", "ask_ja": "何色を選んだ？",
+        "hash": ["#territorywar", "#colorbattle"], "keys": ["territory war", "color battle", "陣取り", "陣取り合戦"],
+    },
+    "survive": {
+        "en": ["Squeezed = -1 life. Last ball wins", "6 balls, 5 lives each, 3 rollers", "Pick a color before the rollers speed up"],
+        "ja": ["潰されたらライフ-1。最後に残るのは？", "6個のボール、ライフ5、ローラー3つ", "ローラーが速くなる前に色を選んで"],
+        "rule_en": "Three rollers run around the ring, faster and faster. A ball pinched between a roller and the wall "
+                   "loses a life. The last ball left wins.",
+        "rule_ja": "3つのローラーが壁ぎわを回り、だんだん速くなります。ローラーと壁にはさまれたボールはライフが1減り、最後に残った1個が勝ち。",
+        "ask_en": "Which color did you pick?", "ask_ja": "何色を選んだ？",
+        "hash": ["#ballrace", "#satisfying"], "keys": ["ball race", "last ball standing", "survival", "ボール サバイバル"],
+    },
+    "smash": {
+        "en": ["Smashed = -1 life. Last ball wins", "6 balls, 4 lives each, 2 pistons", "Pick a color - who survives the pistons?"],
+        "ja": ["叩かれたらライフ-1。最後に残るのは？", "6個のボール、ライフ4、ピストン2本", "色を選んで。ピストンから生き残るのは？"],
+        "rule_en": "Two pistons take turns slamming the side walls. A ball caught between a piston and the wall "
+                   "loses a life. The last ball left wins.",
+        "rule_ja": "2本のピストンが左右の壁を交互に叩きます。ピストンと壁にはさまれたボールはライフが1減り、最後に残った1個が勝ち。",
+        "ask_en": "Which color did you pick?", "ask_ja": "何色を選んだ？",
+        "hash": ["#ballrace", "#satisfying"], "keys": ["ball race", "last ball standing", "survival", "ボール サバイバル"],
+    },
+    "fillwave": {
+        "en": ["Wait for the wave", "Fill it up, then watch the colors line up", "Every wall hit = +1... until it's full"],
+        "ja": ["いっぱいになったら、色の波", "埋め尽くしたあと、色がそろう", "壁に当たるたびに+1、いっぱいになるまで"],
+        "rule_en": "Every ball that hits the wall adds one more. When the shape is full, a wave sorts the colors.",
+        "rule_ja": "壁に当たるたびにボールが1個増えます。形がいっぱいになると、色の波が走って虹色に並びます。",
+        "ask_en": "Which shape should be next?", "ask_ja": "次はどんな形がいい？",
+        "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "fill", "ボール 増える"],
+    },
+    "blackhole": {
+        "en": ["Don't fall in - last ball wins", "8 balls vs a growing black hole", "Pick a color before the hole gets bigger"],
+        "ja": ["吸い込まれたら脱落。最後に残るのは？", "8個のボール対、育つブラックホール", "穴が大きくなる前に色を選んで"],
+        "rule_en": "The black hole in the middle keeps growing and pulling. A ball that touches it is out. The last ball left wins.",
+        "rule_ja": "まん中のブラックホールが育ちながらボールを引き寄せます。触れたボールは脱落。最後に残った1個が勝ち。",
+        "ask_en": "Which color did you pick?", "ask_ja": "何色を選んだ？",
+        "hash": ["#ballrace", "#blackhole"], "keys": ["ball race", "black hole", "survival", "ブラックホール"],
+    },
+    "towers2": {
+        "en": ["x2 per floor vs +82 per second vs 1,520 from the start", "3 towers, 3 rules - who breaks floor 10 first?",
+               "Doubling, steady growth, or a huge head start?"],
+        "ja": ["倍々か、毎秒増えるか、最初から大勢か", "3つの塔、10階を最初に壊すのは？", "2倍ずつ・毎秒82個・最初から1,520個"],
+        "rule_en": "Every hit takes 1 HP off the floor, and each floor is tougher than the one above. "
+                   "One tower doubles on every floor, one gains balls every second, and one starts huge but never grows.",
+        "rule_ja": "ボールが床に当たるたびに床の体力が1減り、下の階ほど固くなります。"
+                   "階ごとに2倍になる塔、毎秒ボールが増える塔、最初から大勢で増えない塔の3つです。",
+        "ask_en": "Which tower did you pick?", "ask_ja": "どの塔を選んだ？",
+        "hash": ["#simulation", "#satisfying"], "keys": ["simulation race", "exponential growth", "tower", "倍々"],
+    },
+    "cannons": {
+        "en": ["3 cannons, 3 rules - who breaks the wall first?", "x2 speed vs +1 cannon vs a head start",
+               "One cannon that keeps doubling, or a whole row from the start?"],
+        "ja": ["3つの砲台、壁を最初に壊すのは？", "速さ2倍か、1門ずつ増えるか、最初から多いか", "倍々で速くなる1門か、最初からずらりと並ぶか"],
+        "rule_en": "Every shot takes 1 HP off the wall. One cannon doubles its fire rate on a timer, "
+                   "one lane adds a cannon on a timer, and one lane starts with a full row that never grows.",
+        "rule_ja": "1発で壁の体力が1減ります。1門だけで撃つ速さが倍々になる砲台、一定時間ごとに1門ずつ増える砲台、"
+                   "最初から何門もあって増えない砲台の3つです。",
+        "ask_en": "Which lane did you pick?", "ask_ja": "どのレーンを選んだ？",
+        "hash": ["#simulation", "#satisfying"], "keys": ["simulation race", "exponential growth", "cannon", "倍々"],
     },
     "faces": {
         "en": ["16 faces vs 4096 faces", "Same cloth, more faces every time", "How many faces until it looks like cloth?"],

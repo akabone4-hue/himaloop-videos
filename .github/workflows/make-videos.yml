@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       types:
-        description: "種類（all または grow,rings,multiply,colorwar,battle,marble,faces,chime,music,weapon,bricks,fill,gear,arms,glass,walls,towers,hammer,cam,rays をカンマ区切り）"
+        description: "種類（all または grow,rings,multiply,colorwar,battle,marble,faces,chime,music,weapon,bricks,fill,gear,arms,glass,walls,towers,towers2,cannons,colorwar2,hammer,cam,hexarms,beams,survive,smash,fillwave,blackhole,rps,rays をカンマ区切り）"
         required: false
         default: "all"
       count:

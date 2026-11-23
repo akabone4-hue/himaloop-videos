@@ -20,6 +20,7 @@ from engine import CX, CY, hsv, mix, penta
 from sims_pack import _ball, _ring, _space, _steps
 
 GREY_DARK, GREY = (95, 95, 100), (150, 150, 156)
+BEAM_RED = 0.42       # beams: 赤い光線の長さ（円の半径に対する割合）。長いほど消えやすく、増えるのが遅くなる
 
 
 def _box(sp, half):
@@ -74,6 +75,8 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
     b, c = _ball(sp, m["start"], br, vel=(math.cos(a0) * 430, math.sin(a0) * 430), elasticity=1.0, friction=0.0)
     balls.append([b, c, colour(0.0), 0.3])
     rings = []                                 # 増えた瞬間に広がる輪 [x, y, 色, 経過時間]
+    gone = []                                  # 消えた瞬間のしるし [x, y, 経過時間]
+    peak = 1
     n_steps, dt = _steps(v)
     done_at = None
     lo, hi = m.get("speed", (320.0, 780.0))
@@ -87,6 +90,16 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
             sp.step(dt)
         if done_at is None:
             born = 0
+            if "kill" in m:                    # 仕掛けによっては、触れたボールが消える（最後の 1 個は消えない）
+                for item in list(balls):
+                    if len(balls) <= 1:
+                        break
+                    x, y = item[0].position.x, item[0].position.y
+                    if m["kill"](x, y):
+                        sp.remove(item[0], item[1])
+                        balls.remove(item)
+                        gone.append([x, y, 0.0])
+                        v.audio.play(t, 180, 0.3, "pop", channel="k", min_gap=0.06)
             for item in list(balls):
                 if len(balls) >= cap or born >= m.get("per_frame", 6):
                     break
@@ -158,11 +171,20 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
         for r in rings:
             r[3] += 1 / v.fps
         rings = [r for r in rings if r[3] < 0.6][-40:]
+        for g_ in gone:
+            g_[2] += 1 / v.fps
+        gone = [g_ for g_ in gone if g_[2] < 0.35][-40:]
+        peak = max(peak, len(balls))
 
         if not v.dry:
             v.begin(bg=(0, 0, 0))
             for x, y, col, age in rings:
                 v.circle(mix((0, 0, 0), col, 0.5 * (1 - age / 0.6)), (x, y), 14 + 110 * age / 0.6, width=2)
+            for x, y, age in gone:                             # 消えた所に、小さな赤いばつ印
+                c_ = mix((255, 70, 70), (0, 0, 0), age / 0.35)
+                d_ = 9 + 30 * age
+                pygame.draw.line(v.surf, c_, (x - d_, y - d_), (x + d_, y + d_), 3)
+                pygame.draw.line(v.surf, c_, (x - d_, y + d_), (x + d_, y - d_), 3)
             if done_at is None:
                 m["frame"](v)
             for body, _c, col, _n in balls:
@@ -328,3 +350,277 @@ def _mech_cam(sp, rng, br):
 
 def run_cam(v, rng):
     return _run(v, rng, _mech_cam, "Pinched = x2", cap=320, bottom=CY + 620)
+
+
+# ------------------------------------------------------------------ survive: 潰されたらライフが減る生き残り戦
+SURVIVORS = [("RED", (255, 77, 90)), ("BLUE", (61, 139, 255)), ("GREEN", (61, 220, 132)), ("YELLOW", (255, 201, 60)),
+             ("PURPLE", (178, 102, 255)), ("ORANGE", (255, 140, 50))]
+
+
+def _run_survive(v, rng, mech, lives=3, br=26.0, bottom=CY + 640, caption="Squeezed = -1 life"):
+    """6 色のボールが同じ仕掛けの中を逃げ回る。はさまれて潰されるたびにライフが 1 減り、0 になると消える。
+    最後まで残った 1 個が勝ち。潰された判定は増える型（_run）と同じ。"""
+    sp = _space(gravity=0.0)
+    sp.iterations = 12
+    m = mech(sp, rng, br)
+    names = SURVIVORS[:]
+    rng.shuffle(names)
+    lo, hi = m.get("speed", (300.0, 600.0))
+    balls = []                                 # [body, shape, 番号, ライフ, 次に潰されてよい時刻]
+    for i in range(len(names)):
+        a = i * math.tau / len(names) + rng.uniform(-0.2, 0.2)
+        d = rng.uniform(40, 120)
+        va = rng.uniform(0, math.tau)
+        b, c = _ball(sp, (CX + math.cos(a) * d, CY + math.sin(a) * d), br,
+                     vel=(math.cos(va) * 420, math.sin(va) * 420), elasticity=1.0, friction=0.0)
+        balls.append([b, c, i, lives, 1.5])
+    hp = [lives] * len(names)
+    out_order = []                             # 脱落した順
+    pops = []                                  # 潰された瞬間の輪 [x, y, 色, 経過, 脱落か]
+    n_steps, dt = _steps(v)
+    done_at = None
+    while True:
+        t = v.t
+        m["update"](t, 1.0 / v.fps)
+        if "sound" in m and done_at is None:
+            m["sound"](v, t)
+        for _ in range(n_steps):
+            sp.step(dt)
+        if done_at is None:
+            for item in list(balls):
+                body = item[0]
+                if t >= item[4]:
+                    touch = []
+                    body.each_arbiter(lambda arb, touch=touch: touch.append(
+                        (arb.normal.x, arb.normal.y, arb.shapes[1].body.body_type == pymunk.Body.KINEMATIC))
+                        if arb.shapes[1].body.body_type != pymunk.Body.DYNAMIC else None)
+                    pinch = None
+                    for i in range(len(touch)):
+                        for j in range(i + 1, len(touch)):
+                            p, q = touch[i], touch[j]
+                            if (p[2] or q[2]) and p[0] * q[0] + p[1] * q[1] < -0.45:
+                                pinch = (p[0] - q[0], p[1] - q[1])
+                    if pinch is not None:
+                        d = math.hypot(*pinch) or 1.0
+                        n = (pinch[0] / d, pinch[1] / d)
+                        x, y = body.position.x, body.position.y
+                        if "split" in m:
+                            p1, v1, _p2, _v2 = m["split"](x, y, n, body.velocity, rng)
+                        else:
+                            tx, ty = -n[1], n[0]
+                            s_ = rng.choice((-1, 1))
+                            p1, v1 = (x + s_ * tx * 6, y + s_ * ty * 6), (s_ * tx * 560, s_ * ty * 560)
+                        item[3] -= 1
+                        hp[item[2]] = item[3]
+                        item[4] = t + 1.2
+                        col = names[item[2]][1]
+                        if item[3] <= 0:
+                            pops.append([x, y, col, 0.0, True])
+                            sp.remove(body, item[1])
+                            balls.remove(item)
+                            out_order.append(item[2])
+                            v.audio.play(t, 300, 0.7, "pop")
+                            v.audio.note(t, 45 + 2 * len(out_order), 0.6, "piano", dur=0.6)
+                        else:
+                            pops.append([x, y, col, 0.0, False])
+                            body.position, body.velocity = p1, v1
+                            v.audio.play(t, 150, 0.55, "thud", channel="h", min_gap=0.05)
+            for item in balls:
+                body = item[0]
+                x, y = body.position.x, body.position.y
+                nx_, ny_ = m["clamp"](x, y)
+                if nx_ != x or ny_ != y:
+                    vx_, vy_ = body.velocity
+                    if (x - nx_) * vx_ > 0:
+                        vx_ = -vx_
+                    if (y - ny_) * vy_ > 0:
+                        vy_ = -vy_
+                    body.position, body.velocity = (nx_, ny_), (vx_, vy_)
+                spd = body.velocity.length
+                if spd > hi:
+                    body.velocity = body.velocity * (hi / spd)
+                elif spd < lo:
+                    a = rng.uniform(0, math.tau)
+                    body.velocity = (math.cos(a) * (lo + 60), math.sin(a) * (lo + 60))
+            if len(balls) <= 1:
+                done_at = t
+                for i, mm in enumerate((60, 64, 67, 72, 76)):
+                    v.audio.note(t + 0.07 * i, mm, 0.8, "piano")
+        for p_ in pops:
+            p_[3] += 1 / v.fps
+        pops = [p_ for p_ in pops if p_[3] < 0.6]
+
+        if not v.dry:
+            v.begin(bg=(0, 0, 0))
+            m["frame"](v)
+            for x, y, col, age, dead in pops:
+                k = age / 0.6
+                v.circle(mix(col, (0, 0, 0), k), (x, y), br + (220 if dead else 110) * k, width=5 if dead else 3)
+            for body, _c, idx, life, cool in balls:
+                x, y = body.position.x, body.position.y
+                col = names[idx][1]
+                blink = t < cool and int(t * 14) % 2 == 0      # 潰された直後は点滅（この間はもう一度潰されない）
+                v.circle((255, 255, 255), (x, y), br + 3)
+                v.circle(mix(col, (255, 255, 255), 0.55) if blink else col, (x, y), br)
+                v.text(str(life), 40, (x, y + 1), outline=3)
+            m["draw"](v, t)
+            v.text(caption, 92, (CX, 170))
+            # 上の一覧: 色ごとの残りライフ（脱落した色は暗くなる）
+            for i, (name, col) in enumerate(names):
+                px = CX - (len(names) - 1) * 80 + i * 160
+                alive = hp[i] > 0
+                v.circle(col if alive else mix((0, 0, 0), col, 0.25), (px, 272), 24)
+                for k in range(lives):
+                    c2 = col if k < hp[i] else (46, 48, 58)
+                    wd = 110 / lives
+                    pygame.draw.rect(v.surf, c2, (int(px - 55 + k * wd), 308, int(wd - 5), 9), border_radius=3)
+            if done_at is not None and balls:
+                w = balls[0][2]
+                v.text(f"{names[w][0]} WINS", 150, (CX, bottom - 30), color=names[w][1], outline=7)
+            else:
+                v.text(f"{len(balls)} left", 110, (CX, bottom))
+        v.end(glow=0.28)
+        if done_at is not None and v.t - done_at > 2.6:
+            break
+        if v.t > 80:
+            break
+    winner = names[balls[0][2]][0] if balls else "nobody"
+    return {"result": f"{winner} wins, {len(out_order)} out", "winner": winner}
+
+
+def run_survive(v, rng):
+    return _run_survive(v, rng, _mech_cam, lives=5)
+
+
+def run_smash(v, rng):
+    return _run_survive(v, rng, _mech_hammer, lives=4, caption="Smashed = -1 life")
+
+
+# ------------------------------------------------------------------ hexarms: 六角形の中で 3 本のアームが回る
+def _mech_hexarms(sp, rng, br):
+    """arms の別バージョン。六角形の角 3 つに C 字のアームが付いて回る。アームと壁にはさまれたボールが割れる。"""
+    Rh = 450.0
+    verts = [(CX + math.cos(math.radians(-90 + 60 * i)) * Rh, CY + math.sin(math.radians(-90 + 60 * i)) * Rh)
+             for i in range(6)]
+    walls = []
+    for p, q in zip(verts, verts[1:] + verts[:1]):
+        seg = pymunk.Segment(sp.static_body, p, q, 4)
+        seg.elasticity, seg.friction = 1.0, 0.0
+        sp.add(seg)
+        walls.append(seg)
+    # 各辺の「内向きの向き」と辺上の 1 点（枠の外へ出かけた球を戻すのに使う）
+    edges = []
+    for p, q in zip(verts, verts[1:] + verts[:1]):
+        mx, my = (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
+        d = math.hypot(CX - mx, CY - my)
+        edges.append((mx, my, (CX - mx) / d, (CY - my) / d))
+
+    def clamp(x, y):
+        for mx, my, nx, ny in edges:
+            depth = (x - mx) * nx + (y - my) * ny - (4 + br)
+            if depth < 0:
+                x, y = x - nx * depth, y - ny * depth
+        return x, y
+
+    rho, span, n_seg = 190.0, 3.5, 16
+    arms = []
+    for k, i in enumerate((0, 2, 4)):
+        turn = 1 if k % 2 == 0 else -1
+        rotor = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
+        rotor.position = verts[i]
+        rotor.angle = rng.uniform(0, math.tau)
+        rotor.angular_velocity = turn * rng.uniform(2.6, 3.2)
+        # 逆回りのアームは形も鏡写しにする（どのアームも、回る向きに対して同じ側ですくう）
+        pts = [(rho + math.cos(math.pi + turn * span * j / n_seg) * rho, math.sin(math.pi + turn * span * j / n_seg) * rho)
+               for j in range(n_seg + 1)]
+        sp.add(rotor)
+        for p, q in zip(pts[:-1], pts[1:]):
+            seg = pymunk.Segment(rotor, p, q, 8)
+            seg.elasticity, seg.friction = 1.0, 0.0
+            sp.add(seg)
+        arms.append((rotor, pts))
+
+    def update(t, fdt):
+        pass                                    # アームは一定の速さで回り続ける
+
+    def frame(v):
+        pygame.draw.lines(v.surf, (245, 245, 245), True, verts, 5)
+
+    def draw(v, t):
+        for rotor, pts in arms:
+            ca, sa = math.cos(rotor.angle), math.sin(rotor.angle)
+            px, py = rotor.position
+            world = [(px + x * ca - y * sa, py + x * sa + y * ca) for x, y in pts]
+            pygame.draw.lines(v.surf, GREY_DARK, False, world, 20)
+            pygame.draw.lines(v.surf, GREY, False, world, 12)
+            v.circle(GREY, (px, py), 16)
+            v.circle((60, 60, 66), (px, py), 7)
+
+    return {"walls": walls, "clamp": clamp, "update": update, "frame": frame, "draw": draw,
+            "start": (CX + rng.uniform(-60, 60), CY + rng.uniform(-60, 60))}
+
+
+def run_hexarms(v, rng):
+    return _run(v, rng, _mech_hexarms, "Squeezed = x2", bottom=CY + 640)
+
+
+# ------------------------------------------------------------------ beams: 緑の光線で 2 倍、赤の光線で消える
+def _mech_beams(sp, rng, br):
+    """円の中心から 2 本の光線が伸びて、別々の速さで回る。緑に触れたボールは 2 つに割れ、赤に触れたボールは消える。
+    赤は緑より短いので、全体としては増えていく（増えたり減ったりしながら上限へ向かう）。"""
+    R = 440.0
+    walls = _ring(sp, (CX, CY), R, n=140, thick=5.0, elasticity=1.0, friction=0.0)
+    wg = rng.choice((-1, 1)) * rng.uniform(1.5, 1.8)            # 緑が回る速さ（ラジアン/秒）
+    wr = -math.copysign(rng.uniform(0.8, 1.0), wg)              # 赤は逆向きに回る
+    ag0, ar0 = rng.uniform(0, math.tau), rng.uniform(0, math.tau)
+    len_g, len_r = R - 8, R * BEAM_RED                          # 緑は端から端まで（中心の両側）、赤は片側だけで短い
+    state = {"t": 0.0}
+
+    def tip(a0, w, length, t):
+        a = a0 + w * t
+        return (CX + math.cos(a) * length, CY + math.sin(a) * length), (math.cos(a), math.sin(a))
+
+    def near(x, y, a0, w, length, t, width, both=False):
+        _p, (ux, uy) = tip(a0, w, length, t)
+        rx, ry = x - CX, y - CY
+        along = rx * ux + ry * uy
+        if both:
+            along = abs(along)
+        return 26 < along < length and abs(rx * uy - ry * ux) < width
+
+    def update(t, fdt):
+        state["t"] = t
+
+    def pinched(x, y):
+        if near(x, y, ag0, wg, len_g, state["t"], br + 5, both=True):
+            _p, (ux, uy) = tip(ag0, wg, len_g, state["t"])
+            return (-uy, ux)                    # 光線と直角の向き（2 つに割れて、光線に沿って前後へ飛ぶ）
+        return None
+
+    def kill(x, y):
+        return near(x, y, ar0, wr, len_r, state["t"], br + 4)
+
+    def frame(v):
+        v.circle((245, 245, 245), (CX, CY), R + 3, width=5)
+
+    def draw(v, t):
+        for a0, w, length, col, both in ((ag0, wg, len_g, (60, 255, 120), True), (ar0, wr, len_r, (255, 60, 70), False)):
+            p, _u = tip(a0, w, length, t)
+            q = (2 * CX - p[0], 2 * CY - p[1]) if both else (CX, CY)
+            pygame.draw.line(v.surf, mix((0, 0, 0), col, 0.35), q, p, 18)
+            pygame.draw.line(v.surf, col, q, p, 8)
+            pygame.draw.line(v.surf, (255, 255, 255), q, p, 2)
+            v.circle(col, p, 9)
+            if both:
+                v.circle(col, q, 9)
+        v.circle((225, 225, 228), (CX, CY), 22)
+        v.circle((60, 60, 66), (CX, CY), 9)
+
+    a = rng.uniform(0, math.tau)
+    return {"walls": walls, "clamp": _circle_clamp(R, br), "update": update, "frame": frame, "draw": draw,
+            "pinched": pinched, "kill": kill, "start": (CX + math.cos(a) * 300, CY + math.sin(a) * 300),
+            "speed": (300.0, 560.0), "wait": (0.55, 0.85), "per_frame": 16}
+
+
+def run_beams(v, rng):
+    return _run(v, rng, _mech_beams, "GREEN = x2   RED = gone", cap=300, bottom=CY + 640)

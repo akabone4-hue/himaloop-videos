@@ -17,6 +17,16 @@
 | `cam` | arms の仲間。円の中心から伸びた 3 本の腕の先で、ローラーが壁すれすれを回る。ローラーと壁にはさまれたボールが 2 つに割れる。回転がだんだん速くなり、終盤に一気に増える |
 | `towers` | 条件の違う 3 つの塔（少数で階ごとに 3 倍／階ごとに 2 倍／最初から大勢で階ごとに一定数ずつ増える）。10 階を最初に壊した塔が勝ち。数値は切りのいい数だけを使い、ほぼ同時に終わる組み合わせをあらかじめ探して入れてある |
 | `chime` | 3D。色つきの鉄琴の上をボールが弧を描いて跳ね、着地するたびに 1 音鳴る（次の音までが長いほど高く跳ぶ）。経路は `sims_course.arc_layout` が決め、絵は `blender_chime.py` が描く |
+| `towers2` | towers の別バージョン。階ごとに 2 倍／毎秒決まった数ずつ増える／最初から大勢で増えない、の 3 つ |
+| `cannons` | towers の兄弟。3 本のレーンで砲台が上の壁を撃つ。撃つ速さが倍々になる 1 門／一定時間ごとに 1 門ずつ増える／最初から何門もある、の 3 つ |
+| `colorwar2` | 陣取り合戦の別バージョン。巨大で速い 1 個／速い 2 個／遅い 8 個／ふつうの 4 個 |
+| `hexarms` | arms の別バージョン。六角形の角 3 つでアームが回る |
+| `beams` | 円の中で 2 本の光線が逆向きに回る。緑に触れたボールは 2 つに割れ、赤に触れたボールは消える。300 個で弾ける |
+| `survive` | 6 色のボールがローラーから逃げる生き残り戦。潰されるたびにライフが 1 減り、最後に残った 1 個が勝ち |
+| `smash` | survive のピストン版 |
+| `fillwave` | 形（ハート・六角形・円・ひし形）の中でボールが増え続け、いっぱいになると色の波が走って虹色に並び、最後に弾ける |
+| `blackhole` | 8 色のボールが、育っていくブラックホールから逃げる。触れたら脱落。最後に残った 1 個が勝ち |
+| `rps` | グー・チョキ・パーの駒が、勝てる相手を追い、負ける相手から逃げる。触れた相手を仲間に変え、1 種類になったら終わり |
 | `faces` | 3D。同じ布を面の数だけ変えて（16 → 4096 面）順に球の上へ落とす |
 | `weapon` | 武器を持ったボールの 1 対 1。当てるたびに武器が強くなる |
 | `bricks` | ブロックを掘り進むレース。最初に掘り抜いた色が勝ち |
@@ -58,8 +68,10 @@ python video/make.py rings --preview       # 低画質で手早く確認
 | `sims_ring.py` | grow / rings / multiply |
 | `sims_arena.py` | colorwar / battle |
 | `sims_course.py` | music（と、以前の 2D 版 marble） |
-| `sims_squeeze.py` | hammer / cam（「潰されると 2 倍」の土台。仕掛けを 1 つ書けば新しい型になる） |
-| `sims_tower.py` | towers |
+| `sims_squeeze.py` | hammer / cam / hexarms / beams / survive / smash（「潰されると…」の土台。仕掛けを 1 つ書けば新しい型になる） |
+| `sims_fill.py` | fillwave / blackhole |
+| `sims_swarm.py` | rps |
+| `sims_tower.py` | towers / towers2 / cannons |
 | `sims_3d.py` | marble / faces / chime（3D。絵は `blender_marble.py` / `blender_cloth.py` / `blender_chime.py` が Blender で描き、ここで文字と音を重ねる） |
 | `sims_more.py` | weapon / bricks |
 | `sims_pack.py` | fill / gear / arms / glass（ボール同士が押し合う型。物理エンジン pymunk を使用） |

@@ -23,6 +23,21 @@ TRAITS = [
 ]
 
 
+# colorwar2: 数・大きさ・速さで勝負する条件（最初の個数, 増える間隔, 増え方, 説明, 大きさの倍率, 速さの倍率）。
+# 倍率は試算で勝率をそろえて決める（下の値を変えたら、試算し直すこと）。
+TRAITS2 = [
+    (1, None, None, "1 giant, very fast", 4.0, 3.0),
+    (2, None, None, "2 balls, fast", 1.0, 2.0),
+    (8, None, None, "8 balls, slow", 1.0, 0.52),
+    (4, None, None, "4 balls, normal", 1.0, 1.03),
+]
+
+
+def run_colorwar2(v, rng):
+    """陣取り合戦の別バージョン: 大きい 1 個／速い 2 個／遅い 8 個／ふつう 3 個。"""
+    return run_colorwar(v, rng, traits=TRAITS2)
+
+
 def run_colorwar(v, rng, traits=None):
     traits = traits or TRAITS
     G, cell = 24, 40
@@ -40,6 +55,9 @@ def run_colorwar(v, rng, traits=None):
     owner[:half, half:] = 2
     owner[half:, half:] = 3
     br = 16.0
+    # 条件に 5 つ目・6 つ目（大きさの倍率・速さの倍率）があれば使う（colorwar2 用）
+    rad = [br * (trait[t][4] if len(trait[t]) > 4 else 1.0) for t in range(4)]
+    fast = [trait[t][5] if len(trait[t]) > 5 else 1.0 for t in range(4)]
     chord = [60, 64, 67, 72]
 
     balls = []
@@ -61,8 +79,9 @@ def run_colorwar(v, rng, traits=None):
                 break
             for b in balls:
                 team = b[0]
-                b[1] += b[3] * speed * v.dt
-                b[2] += b[4] * speed * v.dt
+                br = rad[team]
+                b[1] += b[3] * speed * fast[team] * v.dt
+                b[2] += b[4] * speed * fast[team] * v.dt
                 if b[1] - br < ox:
                     b[1], b[3] = ox + br, abs(b[3])
                 elif b[1] + br > ox + side:
@@ -138,9 +157,10 @@ def run_colorwar(v, rng, traits=None):
             v.surf.blit(pygame.transform.scale(grid_surf, (side, side)), (ox, oy))
             pygame.draw.rect(v.surf, (255, 255, 255), (ox - 5, oy - 5, side + 10, side + 10), 5)
             for b in balls:
-                v.circle((20, 20, 26), (b[1], b[2]), br + 4)
-                v.circle((255, 255, 255), (b[1], b[2]), br)
-                v.circle(teams[b[0]][1], (b[1], b[2]), br - 5)
+                r_ = rad[b[0]]
+                v.circle((20, 20, 26), (b[1], b[2]), r_ + 4)
+                v.circle((255, 255, 255), (b[1], b[2]), r_)
+                v.circle(teams[b[0]][1], (b[1], b[2]), r_ - 5)
             for x, y, s_, col, age in labels:
                 v.text(s_, 84, (x, y - 30 - 70 * age), outline=6, alpha=int(255 * (1 - age / 0.9)))
             v.text("Which color takes over?", 88, (CX, 190))

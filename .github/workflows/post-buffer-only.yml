@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       type:
-        description: "種類（weapon, colorwar, bricks, marble, music, battle, multiply, rings, grow, fill, gear, arms, glass, walls, towers, hammer, cam, rays）"
+        description: "種類（weapon, colorwar, bricks, marble, music, battle, multiply, rings, grow, fill, gear, arms, glass, walls, towers, towers2, cannons, colorwar2, hammer, cam, hexarms, beams, survive, smash, fillwave, blackhole, rps, rays）"
         required: false
         default: "weapon"
       seed:
