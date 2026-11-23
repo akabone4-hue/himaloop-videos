@@ -640,26 +640,31 @@ def _glow_sprite(size=256):
     return _SPRITES["glow"]
 
 
-def run_gear(v, rng):
+def run_gear2(v, rng):
+    """歯車の別バージョン: アームが 4 本（2 本ずつ逆向き）。すれ違う回数が倍になる。"""
+    return run_gear(v, rng, pairs=2, rho=135.0, slow=0.5, cap=2000)
+
+
+def run_gear(v, rng, pairs=1, rho=150.0, slow=1.0, cap=1000):
     """円の中心の歯車に、半円のアームが 2 本付いて逆向きに回る。2 本のアームがすれ違うときに
     あいだに挟まれて潰されたボールは 2 個に増える。増えるほど粒が小さくなり、最後は円が割れる。"""
     R = 470.0
     C = (CX, CY)
     r0 = 14.0
-    rho, thick, span, n_seg = 150.0, 9.0, 3.6, 18
-    cap, fill = 1000, 0.80
+    thick, span, n_seg = 9.0, 3.6, 18
+    fill = 0.80
     sp = _space(gravity=0.0)
     sp.iterations = 10
     sp.damping = 0.93
     ring = _ring(sp, C, R, n=140, thick=5.0, elasticity=1.0, friction=0.0)
 
     A0, phi0 = rng.uniform(0, math.tau), rng.uniform(0, math.tau)
-    dA, dphi = rng.choice((-1, 1)) * rng.uniform(0.25, 0.4), rng.uniform(2.2, 2.5)
+    dA, dphi = rng.choice((-1, 1)) * rng.uniform(0.25, 0.4) * slow, rng.uniform(2.2, 2.5) * slow
     arms = []                                   # (回転体, 描く用の点, 線分の始点, 線分の終点)
-    for s_ in (1, -1):
+    for s_, turn in [(s_, k * math.tau / pairs) for k in range(pairs) for s_ in (1, -1)]:
         rotor = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
         rotor.position = C
-        rotor.angle = A0 + s_ * phi0
+        rotor.angle = A0 + s_ * phi0 + turn
         rotor.angular_velocity = dA + s_ * dphi
         pts = [(rho + math.cos(math.pi + s_ * span * k / n_seg) * rho, math.sin(math.pi + s_ * span * k / n_seg) * rho)
                for k in range(n_seg + 1)]
@@ -707,9 +712,15 @@ def run_gear(v, rng):
                 k_min = dall.argmin(axis=1)
                 dists.append(dall[idx, k_min])
                 aways.append(vec[idx, k_min] / (dall[idx, k_min][:, None] + 1e-9))
-            # 潰された = 2 本のアームがボールをはさんで向かい合い、すき間がボールの直径より狭い
-            gap = (dists[0] - thick) + (dists[1] - thick)
-            squeezed = (gap < 2 * rad + GEAR_PINCH) & ((aways[0] * aways[1]).sum(axis=1) < -0.4)
+            # 潰された = 逆向きに回る 2 本のアームがボールをはさんで向かい合い、すき間がボールの直径より狭い
+            squeezed = np.zeros(len(P), dtype=bool)
+            side = np.zeros(len(P), dtype=int)        # どのアームにはさまれたか（弾ける向きに使う）
+            for i_ in range(0, len(arms), 2):
+                for j_ in range(1, len(arms), 2):
+                    gap = (dists[i_] - thick) + (dists[j_] - thick)
+                    hit = (gap < 2 * rad + GEAR_PINCH) & ((aways[i_] * aways[j_]).sum(axis=1) < -0.4)
+                    side[hit & ~squeezed] = i_
+                    squeezed |= hit
             col = order[int(t / 2.4) % len(order)]
             born, limit = 0, max(3, len(balls) // 14)
             for i in np.nonzero(squeezed)[0]:
@@ -719,7 +730,7 @@ def run_gear(v, rng):
                 body = item[0]
                 x, y = body.position.x, body.position.y
                 # その場で 2 つに割れ、アームのすき間に沿って反対向きに弾け飛ぶ
-                ax_, ay_ = float(aways[0][i][0]), float(aways[0][i][1])
+                ax_, ay_ = float(aways[side[i]][i][0]), float(aways[side[i]][i][1])
                 tx_, ty_ = -ay_, ax_
                 k = rng.uniform(520, 700)
                 body.velocity = (tx_ * k, ty_ * k)
@@ -730,7 +741,7 @@ def run_gear(v, rng):
                 born += 1
             if born:
                 splits += born
-                for m_ in (10, 100, 500, 1000):
+                for m_ in (10, 100, 500, 1000, 2000):
                     if len(balls) >= m_ > len(balls) - born:
                         marks.append((m_, round(t, 1)))
                 if v.audio.note(t, ARP_PROG[(seq // 8) % 4][ARP_PAT[seq % 8]], 0.36, "marimba", channel="s", min_gap=0.07):

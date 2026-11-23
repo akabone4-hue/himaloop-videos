@@ -71,10 +71,6 @@ SIMS = {
         "run": sims_swarm.run_rps, "length": (20, 41), "ja": "グー・チョキ・パーの駒が追いかけ合い、触れた相手を仲間に変える",
         "titles": ["グー・チョキ・パー、最後に残るのは？", "Rock Paper Scissors - which one takes over?"],
     },
-    "colorwar2": {
-        "run": sims_arena.run_colorwar2, "length": (38, 39), "search": False, "ja": "陣取り合戦の別バージョン（大きい 1 個／速い 2 個／遅い 8 個／ふつう 4 個）",
-        "titles": ["大きい1個か、速い2個か、遅い8個か", "1 giant vs 2 fast vs 8 slow vs 4 normal"],
-    },
     "survive": {
         "run": sims_squeeze.run_survive, "length": (17, 30), "ja": "ローラーに潰されるたびにライフが減る生き残り戦（6 色）",
         "titles": ["潰されたらライフ-1。最後に残るのは？", "Squeezed = -1 life. Last ball wins"],
@@ -90,6 +86,10 @@ SIMS = {
     "blackhole": {
         "run": sims_fill.run_blackhole, "length": (24, 42), "ja": "育っていくブラックホールから逃げる生き残り戦（8 色）",
         "titles": ["吸い込まれたら脱落。最後に残るのは？", "Don't fall in - last ball wins"],
+    },
+    "gear2": {
+        "run": sims_pack.run_gear2, "length": (22, 40), "ja": "歯車の別バージョン（アーム 4 本。挟まれて潰されると 2 個に増える）",
+        "titles": ["4本のアームに潰されるたび2倍", "Squeezed = x2 (4 arms)"],
     },
     "bomb": {
         "run": sims_party.run_bomb, "length": (24, 40), "search": False, "ja": "爆弾まわしの生き残り戦（触れると爆弾が移る。8 色）",
@@ -268,17 +268,6 @@ COPY = {
         "ask_en": "Which one did you pick?", "ask_ja": "どれを選んだ？",
         "hash": ["#simulation", "#rockpaperscissors"], "keys": ["rock paper scissors", "simulation", "battle", "じゃんけん"],
     },
-    "colorwar2": {
-        "en": ["1 giant vs 2 fast vs 8 slow vs 4 normal", "Size, speed or numbers - which one takes the map?",
-               "One giant ball against eight slow ones"],
-        "ja": ["大きい1個か、速い2個か、遅い8個か", "大きさ・速さ・数、陣地を取るのはどれ？", "巨大な1個 対 遅い8個"],
-        "rule_en": "Each ball paints the tiles it touches. Every color plays differently: one giant fast ball, "
-                   "two fast balls, eight slow balls, or four normal ones. The biggest territory when the timer ends wins.",
-        "rule_ja": "ボールが触れたマスを自分の色に塗り替える陣取り合戦。色ごとに戦い方が違います："
-                   "巨大で速い1個／速い2個／遅い8個／ふつうの4個。時間切れで一番広い色が勝ち。",
-        "ask_en": "Which color did you pick?", "ask_ja": "何色を選んだ？",
-        "hash": ["#territorywar", "#colorbattle"], "keys": ["territory war", "color battle", "陣取り", "陣取り合戦"],
-    },
     "survive": {
         "en": ["Squeezed = -1 life. Last ball wins", "6 balls, 5 lives each, 3 rollers", "Pick a color before the rollers speed up"],
         "ja": ["潰されたらライフ-1。最後に残るのは？", "6個のボール、ライフ5、ローラー3つ", "ローラーが速くなる前に色を選んで"],
@@ -421,6 +410,16 @@ COPY.update({
         "rule_en": "Two arms spin in opposite directions. A ball squeezed between them splits in two, "
                    "and the new balls take the color of that moment.",
         "rule_ja": "2本のアームが逆向きに回っています。すれ違うアームに挟まれて潰されたボールは2個に増え、その瞬間の色になります。",
+        "ask_en": "Which color took over the most?", "ask_ja": "一番広がったのは何色？",
+        "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "multiply", "ボール 増える"],
+    },
+    "gear2": {
+        "en": ["Squeezed = x2 (4 arms)", "1 ball, 4 arms, 2,000 balls", "Twice the arms, twice the squeezing"],
+        "ja": ["4本のアームに潰されるたび2倍", "ボール1個と4本のアーム、2,000個まで", "アームが倍なら、潰される回数も倍"],
+        "rule_en": "Four arms spin, two each way. A ball squeezed between two arms that pass each other splits in two, "
+                   "and the new balls take the color of that moment. At 2,000 balls the circle breaks.",
+        "rule_ja": "4本のアームが2本ずつ逆向きに回っています。すれ違うアームに挟まれて潰されたボールは2個に増え、その瞬間の色になります。"
+                   "2,000個になると円が割れます。",
         "ask_en": "Which color took over the most?", "ask_ja": "一番広がったのは何色？",
         "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "multiply", "ボール 増える"],
     },
