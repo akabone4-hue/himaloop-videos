@@ -60,7 +60,21 @@ def make_one(name, seed, out_dir, preview=False):
         json.dump(info, f, ensure_ascii=False, indent=2)
     print(f"{name}: seed={seed} {duration:.1f}s -> {base}.mp4 ({time.time() - t0:.0f}s) {meta.get('result', '')}",
           flush=True)
+    if not preview:
+        self_check(base + ".mp4")
     return base + ".mp4"
+
+
+def self_check(path):
+    """本番の書き出しのあと、機械で点検して注意点を出す（tools/review.py と同じ基準）。
+    出すだけで、止めはしない。点検そのものが失敗しても、書き出しは成功のまま。"""
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools"))
+        import review
+        warn = review.review(path)["warn"]
+        print("  点検: " + ("注意なし" if not warn else " / ".join(warn)), flush=True)
+    except Exception as e:                          # 点検は補助。ここで投稿を止めない
+        print(f"  点検は実行できなかった: {e!r}", flush=True)
 
 
 def main():

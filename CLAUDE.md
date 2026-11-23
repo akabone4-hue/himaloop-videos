@@ -25,6 +25,8 @@ python video/tools/review.py 動画.mp4          機械で点検し、コマの�
 python video/tools/smoke.py --golden           直したあと: 落ちないか、順番待ちの動画が変わっていないか
 ```
 
+新しい型は `video/tools/template_sim.py`（そのまま動く骨組み）を写して始める。本番の書き出しのあとは、点検結果が自動で出る。
+
 入れておくもの: `pip install -r video/requirements.txt` と ffmpeg。3D の型だけ `video/requirements-3d.txt`（約 430MB、Python 3.13）。
 
 ## 守ること

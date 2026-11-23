@@ -29,10 +29,11 @@
 
 | 手順 | やること | 道具 |
 |---|---|---|
+| ⓪ 骨組みを写す | `tools/template_sim.py` を写して中身を書く。`registry.py` の `SIMS` と `COPY` に足す | |
 | ① 絵なしで回す | 落ちないか、長さ、勝ち方のかたより。条件の違うレースは、ここで数字を直す | `python video/tools/balance.py 型 --seeds 1-64` |
 | ② 試し書き出し | 低画質で 1 本。見た目と文字の位置 | `python video/make.py 型 --seed 1 --preview` |
 | ③ 本番 | 1080×1920・60 コマ/秒 | `python video/make.py 型 --seed 1` |
-| ④ 機械で点検 | 下の §3 | `python video/tools/review.py 動画.mp4` |
+| ④ 機械で点検 | 下の §3。本番の書き出しのあと自動で出る。一覧画像が要るときは右を使う | `python video/tools/review.py 動画.mp4` |
 | ⑤ 目で点検 | 下の §4。④が作る一覧画像を開いて確かめる | |
 | ⑥ 見てもらう | 動画を送り、指摘をもらう | |
 | ⑦ 記録する | もらった指摘を `FEEDBACK.md` に足す。基準が変わるなら、このファイルも直す | |

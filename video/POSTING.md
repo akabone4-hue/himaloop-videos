@@ -195,6 +195,14 @@ https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/y
 - 動画ファイルは Releases の「videos」に置かれ、消えません
 - 止めたいときは、Actions タブで「Post Video」を選び、右上の「…」から「Disable workflow」を押します
 
+### 壊れた動画を投稿しないための仕組み
+
+| 仕組み | いつ動く | 何をする |
+|---|---|---|
+| 投稿前の関門（`tools/review.py --gate`） | 毎回、YouTube に上げる直前 | 音がない・長さが 10〜60 秒の外・大きさが 1080×1920 でない・ファイルがほぼ空、のどれかなら、上げずに止める。その回は投稿されず、失敗の通知が届く |
+| Check（`.github/workflows/check.yml`） | `video/` のコードを変えるたび | 全部の型を 1 回ずつ絵なしで回し、落ちないかを確かめる（40 秒ほど） |
+| `tools/smoke.py --golden` | コードを直した人が、保存する前に手元で | 順番待ちの動画の長さと結果が、直す前と同じかを比べる |
+
 ## タイトル・説明文の決め方
 
 投稿文は `video/registry.py` の `COPY` で種類ごとに定義しています。
