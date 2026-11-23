@@ -392,7 +392,7 @@ def run_merge(v, rng):
     """上の口が左右に動きながら、数字の付いたボールを落とす。同じ数字どうしが触れると 1 個にまとまって倍になる。
     1024 ができたら、全部が弾けて終わり。"""
     left, right = CX - 430.0, CX + 430.0
-    top, floor_y = 380.0, 1560.0
+    top, floor_y = 430.0, 1610.0                 # 題名を画面の端から離すため、全体を少し下げてある
     sp = _space(gravity=1700.0)
     sp.iterations = 14
     st = sp.static_body
@@ -501,7 +501,7 @@ def run_merge(v, rng):
                 size = int(max(22, min(120, r * (1.15 if k < 3 else 0.95 if k < 6 else 0.75))))
                 v.text(str(2 ** k), size, (x, y + 1), color=(12, 12, 18), outline=0)
             parts.draw(v)
-            v.text("Same number = merge", 92, (CX, 100))
+            v.text("Same number = merge", 92, (CX, 150))
             if done_at is None:
                 v.text(f"biggest: {2 ** best}", 80, (CX, floor_y + 110), color=color(best))
             else:
