@@ -581,7 +581,7 @@ def run_chain(v, rng):
         t = v.t
         for _ in range(v.sub // 2):
             dt = 2 * v.dt
-            if ball_on and t > 0.9:
+            if ball_on and t > 0.25:             # すぐ落ち始める（最初の 1 秒で何も起きないと、見てもらえない）
                 ball_v[1] += 1500 * dt
                 ball += ball_v * dt
                 d = np.hypot(P[:, 0] - ball[0], P[:, 1] - ball[1])
