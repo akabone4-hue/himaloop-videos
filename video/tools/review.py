@@ -4,6 +4,7 @@
   python video/tools/review.py video/out/gear2_2.mp4            1 本を点検（コマの一覧画像も作る）
   python video/tools/review.py video/out/*.mp4 --out DIR        まとめて点検し、DIR に一覧画像と review.md を書く
   python video/tools/review.py FILE.mp4 --close 12.5            12.5 秒からの 2.4 秒間を細かいコマ送りの画像にする
+  python video/tools/review.py FILE.mp4 --gate                  自動投稿の直前の関門。壊れた動画のときだけ失敗で終わる
 
 調べること（基準は video/QUALITY.md の「機械で調べる項目」と同じ）:
   長さ・大きさ・音量 / 最初の音までの時間 / 無音が続く区間 / 動きが止まって見える区間 /
@@ -132,6 +133,26 @@ def close_up(path, out_png, at, span=2.4):
           "-frames:v", "1", out_png])
 
 
+def gate(path):
+    """自動投稿の直前の関門。「出来が良いか」ではなく「壊れていないか」だけを見る。
+    ここで止めるのは、投稿したら明らかに困るものだけ（音がない、長さが極端、大きさが違う、中身がほぼ空）。"""
+    problems = []
+    try:
+        p = probe(path)
+        a = audio(path)
+    except Exception as e:
+        return [f"読めない: {e!r}"]
+    if not 10.0 <= p["duration"] <= 60.0:
+        problems.append(f"長さ {p['duration']:.1f} 秒（10〜60 秒の外）")
+    if (p["width"], p["height"]) != (1080, 1920):
+        problems.append(f"大きさ {p['width']}x{p['height']}（1080x1920 でない）")
+    if p["size_mb"] < 0.3:
+        problems.append(f"ファイルが小さすぎる（{p['size_mb']:.2f}MB）")
+    if a["mean_db"] is None or a["mean_db"] < -45.0:
+        problems.append(f"音がない、または小さすぎる（平均 {a['mean_db']} dB）")
+    return problems
+
+
 def review(path):
     p = probe(path)
     a = audio(path)
@@ -167,7 +188,15 @@ def main():
     ap.add_argument("--out", default=None, help="一覧画像と review.md を書くフォルダ（省略時は動画と同じ場所の review/）")
     ap.add_argument("--close", type=float, default=None, help="この秒数からの細かいコマ送りも作る")
     ap.add_argument("--no-sheet", action="store_true", help="一覧画像を作らない（数字だけ）")
+    ap.add_argument("--gate", action="store_true", help="壊れているときだけ失敗で終わる（自動投稿の直前用）")
     args = ap.parse_args()
+    if args.gate:
+        failed = 0
+        for path in args.files:
+            problems = gate(path) if os.path.exists(path) else ["ファイルがない"]
+            print(f"{os.path.basename(path)}: " + ("OK" if not problems else " / ".join(problems)))
+            failed += bool(problems)
+        return 1 if failed else 0
     out = args.out or os.path.join(os.path.dirname(os.path.abspath(args.files[0])), "review")
     os.makedirs(out, exist_ok=True)
     lines = ["# 動画の点検結果", "", "| 動画 | 長さ | 大きさ | 平均音量 | 最初の音 | 注意 |", "|---|---:|---:|---:|---:|---|"]

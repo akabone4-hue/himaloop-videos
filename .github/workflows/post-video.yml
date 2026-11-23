@@ -110,6 +110,11 @@ jobs:
         if: steps.cred.outputs.ready == 'true'
         run: python video/make.py "${{ steps.pick.outputs.type }}" --seed "${{ steps.pick.outputs.seed }}" --out video/out
 
+      # 壊れた動画（音がない、長さが極端、など）を投稿しないための関門。出来の良し悪しは見ない
+      - name: Check the video before posting
+        if: steps.cred.outputs.ready == 'true'
+        run: python video/tools/review.py video/out/*.mp4 --gate
+
       - name: Upload to YouTube
         if: steps.cred.outputs.ready == 'true' && github.event.inputs.youtube_url == ''
         run: python video/upload_youtube.py video/out/*.mp4 --privacy "${{ github.event.inputs.privacy || 'public' }}"
