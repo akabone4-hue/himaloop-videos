@@ -759,6 +759,9 @@ def run_gear(v, rng, pairs=1, rho=150.0, slow=1.0, cap=1000):
             done_at = t
             for seg in ring:
                 sp.remove(seg)
+            if pairs > 1:                       # 4 本版はアームが輪になって粒を抱え込むので、円と一緒にアームも砕ける
+                for rotor, _pts, _a, _b in arms:
+                    sp.remove(*rotor.shapes)
             for body, _c, _col, _n in balls:
                 dx, dy = body.position.x - CX, body.position.y - CY
                 d = math.hypot(dx, dy) or 1.0
@@ -805,15 +808,20 @@ def run_gear(v, rng, pairs=1, rho=150.0, slow=1.0, cap=1000):
                 ring_col = mix((245, 245, 245), (255, 80, 80), flash * (0.5 + 0.5 * math.sin(t * 40)))
                 pygame.draw.circle(v.surf, ring_col, (int(CX), int(CY)), int(R), 4)
                 pygame.gfxdraw.aacircle(v.surf, int(CX), int(CY), int(R), ring_col)
+            # 4 本版では、円が割れたあとアームは 0.3 秒で砕けて消える
+            gone_k = min(1.0, (t - done_at) / 0.3) if (done_at is not None and pairs > 1) else 0.0
             for rotor, pts, _a, _b in arms:
+                if gone_k >= 1.0:
+                    break
                 ca, sa = math.cos(rotor.angle), math.sin(rotor.angle)
                 world = [(CX + x * ca - y * sa, CY + x * sa + y * ca) for x, y in pts]
-                pygame.draw.lines(v.surf, (88, 88, 94), False, world, 24)
+                dark, light = mix((88, 88, 94), (0, 0, 0), gone_k), mix((158, 158, 164), (0, 0, 0), gone_k)
+                pygame.draw.lines(v.surf, dark, False, world, 24)
                 for p_ in world:
-                    v.circle((88, 88, 94), p_, 11)
-                pygame.draw.lines(v.surf, (158, 158, 164), False, world, 15)
+                    v.circle(dark, p_, 11)
+                pygame.draw.lines(v.surf, light, False, world, 15)
                 for p_ in world:
-                    v.circle((158, 158, 164), p_, 7)
+                    v.circle(light, p_, 7)
             ga = t * 1.6
             teeth = []
             for i in range(24):
