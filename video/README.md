@@ -28,6 +28,7 @@
 | `bricks2` | bricks の別バージョン。6 ダメージ 1 個／3 ダメージ 2 個／1 ダメージ 6 個、の 3 レーン |
 | `bomb` | 爆弾まわし。爆弾は触れた相手に移り、導火線が尽きたとき持っていた色が脱落。爆弾は一番近いボールへ飛ぶ。最後の 1 個が勝ち |
 | `plinko` | 600 個のボールを釘の板に落とす。13 個の仕切りに山ができ、色の波が 1 列ずつ数えたあと、底が開いて流れ落ちる |
+| `chain` | 折り返す帯に並んだ 1,000 個の点。上から落ちた 1 個のボールをきっかけに、弾けた点の火花がとなりの点を弾けさせ、連鎖が帯をたどって最後に爆弾へ届く |
 | `merge` | 左右に動く口から数字の付いたボールが落ちる。同じ数字どうしが触れるとまとまって倍になり、1024 ができたら全部弾ける |
 | `fillwave` | 形（ハート・六角形・円・ひし形）の中でボールが増え続け、いっぱいになると色の波が走って虹色に並び、最後に弾ける |
 | `blackhole` | 8 色のボールが、育っていくブラックホールから逃げる。触れたら脱落。最後に残った 1 個が勝ち |
@@ -76,7 +77,7 @@ python video/make.py rings --preview       # 低画質で手早く確認
 | `sims_squeeze.py` | hammer / cam / hexarms / beams / survive / survive2 / smash（「潰されると…」の土台。仕掛けを 1 つ書けば新しい型になる） |
 | `sims_fill.py` | fillwave / blackhole |
 | `sims_swarm.py` | rps |
-| `sims_party.py` | bomb / plinko / merge |
+| `sims_party.py` | bomb / plinko / merge / chain |
 | `sims_tower.py` | towers / towers2 / cannons |
 | `sims_3d.py` | marble / faces / chime（3D。絵は `blender_marble.py` / `blender_cloth.py` / `blender_chime.py` が Blender で描き、ここで文字と音を重ねる） |
 | `sims_more.py` | weapon / bricks / bricks2 |

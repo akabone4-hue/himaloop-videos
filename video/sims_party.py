@@ -3,6 +3,7 @@
   bomb    8 色のボールが円の中を逃げ回る。爆弾は触れた相手に移る。導火線が尽きたとき持っていた色が脱落。最後の 1 個が勝ち
   plinko  600 個のボールを釘の板に落とす。下の仕切りに積もった山が、最後に色の波で数えられる
   merge   数字の付いたボールが落ちてくる。同じ数字どうしが触れるとまとまって倍になる。1024 ができたら終わり
+  chain   折り返す帯に並んだ 1,000 個の点が、1 個のボールをきっかけに次々と弾け、最後に爆弾へ届く
 """
 
 import math
@@ -515,3 +516,160 @@ def run_merge(v, rng):
         if v.t > 75:
             break
     return {"result": f"{dropped} balls dropped, reached {2 ** best}"}
+
+
+# ============================================================ chain
+def run_chain(v, rng):
+    """1,000 個の点が、折り返しながら下へ続く帯に並んでいる。上から落ちた 1 個のボールが最初の点に当たると、
+    点は弾けて火花を飛ばし、火花が当たったとなりの点も弾ける。連鎖が帯をたどって、最後に大きな爆弾へ届く。"""
+    total = 1000
+    x0, x1 = 100.0, 980.0
+    step = 25.0
+    rows, bands = 4, 7
+    band_h = (rows - 1) * step
+    y0 = 430.0
+    pitch = band_h + 90.0                        # 帯と帯のあいだは、火花が届かない広さ（届くのは約 58）
+    nrng = np.random.default_rng(rng.randrange(1 << 30))
+    pts, order = [], []                          # 点の位置と、道のりの上での位置（0〜1。音の高さと色に使う）
+    n_cols = int((x1 - x0) / step) + 1
+    for b in range(bands):
+        yb = y0 + b * pitch
+        for c in range(n_cols):
+            for r_ in range(rows):
+                pts.append((x0 + c * step, yb + r_ * step))
+                along = c if b % 2 == 0 else n_cols - 1 - c
+                order.append((b * (n_cols + 3) + along) / (bands * (n_cols + 3)))
+        if b < bands - 1:                        # 次の帯へのつなぎ（右端・左端を交互に）
+            xe = x1 if b % 2 == 0 else x0
+            sgn = -1 if b % 2 == 0 else 1
+            for k in range(1, 4):                # 3 列 × 3 段で角を曲がる（細いと、ここで連鎖が切れやすい）
+                for c in range(3):
+                    pts.append((xe + sgn * c * step, yb + band_h + k * (pitch - band_h) / 4))
+                    order.append((b * (n_cols + 3) + n_cols + k - 1) / (bands * (n_cols + 3)))
+    P = np.array(pts) + nrng.uniform(-3.5, 3.5, (len(pts), 2))
+    order = np.array(order)
+    keep = np.ones(len(P), dtype=bool)
+    surplus = len(P) - total
+    if surplus > 0:                              # ちょうど 1,000 個にする（最初と最後の列は残す）
+        inner = np.nonzero((order > 0.03) & (order < 0.97))[0]
+        keep[nrng.choice(inner, surplus, replace=False)] = False
+    P, order = P[keep], order[keep]
+    n = len(P)
+    state = np.zeros(n, dtype=np.int8)           # 0 = まだ, 1 = 火がついた, 2 = 弾けた
+    lit_at = np.zeros(n)
+    fuse0, fuse1 = 0.115, 0.05                  # 火がついてから弾けるまで。先へ進むほど短くなり、連鎖が速くなる
+    F = np.zeros((0, 5))                         # 火花: x, y, vx, vy, 残り時間
+    f_speed, f_life, f_n = 430.0, 0.11, 8
+    last_b = bands - 1
+    bomb_r = 78.0
+    # 爆弾は最後の帯の終わりのすぐ下（火花が届く近さ）
+    bomb = np.array([(x1 - 70.0) if last_b % 2 == 0 else (x0 + 70.0), y0 + last_b * pitch + band_h + bomb_r + 28.0])
+    ball = np.array([x0 + 6.0, 250.0])           # 最初の 1 個は上から落ちてくる
+    if rng.random() < 0.5:                       # 動画ごとに左右を入れ替える
+        P[:, 0] = 2 * CX - P[:, 0]
+        bomb[0] = 2 * CX - bomb[0]
+        ball[0] = 2 * CX - ball[0]
+    hue0 = rng.choice((0.62, 0.85, 0.45))        # 色の並びの始まり（青から／紫から／緑から）
+    ball_v = np.array([0.0, 0.0])
+    ball_on = True
+    popped = 0
+    rings = []                                   # 弾けた瞬間の輪 [x, y, 色, 経過]
+    parts = Particles()
+    boom_at = None
+    flash = 0.0
+    while True:
+        t = v.t
+        for _ in range(v.sub // 2):
+            dt = 2 * v.dt
+            if ball_on and t > 0.9:
+                ball_v[1] += 1500 * dt
+                ball += ball_v * dt
+                d = np.hypot(P[:, 0] - ball[0], P[:, 1] - ball[1])
+                hit = (state == 0) & (d < 22)
+                if hit.any():
+                    state[hit] = 1
+                    lit_at[hit] = t
+                    ball_on = False
+                    parts.burst(rng, tuple(ball), (255, 255, 255), n=16, speed=300, life=0.4, gravity=False)
+            if len(F):
+                F[:, 0:2] += F[:, 2:4] * dt
+                F[:, 4] -= dt
+                idx = np.nonzero(state == 0)[0]
+                if len(idx):
+                    D = np.hypot(F[:, None, 0] - P[None, idx, 0], F[:, None, 1] - P[None, idx, 1])
+                    got = (D < 11.0).any(axis=0)
+                    state[idx[got]] = 1
+                    lit_at[idx[got]] = t
+                if boom_at is None and (np.hypot(F[:, 0] - bomb[0], F[:, 1] - bomb[1]) < bomb_r).any():
+                    boom_at = t
+                    flash = 1.0
+                    rest = state == 0                 # 爆風で、残っていた点も全部弾ける
+                    state[rest] = 1
+                    lit_at[rest] = t + nrng.uniform(0.0, 0.35, int(rest.sum()))
+                    for _k in range(6):
+                        parts.burst(rng, tuple(bomb), hsv(rng.random(), 0.8, 1.0), n=60, speed=1500, life=1.3, size=10,
+                                    gravity=False)
+                    v.audio.play(t, 50, 1.0, "thud")
+                    v.audio.play(t, 75, 0.9, "thud")
+                    for i, mm in enumerate((48, 55, 60, 64, 67, 72, 76)):
+                        v.audio.note(t + 0.04 * i, mm, 0.8, "piano")
+                F = F[F[:, 4] > 0]
+            due = np.nonzero((state == 1) & (t - lit_at >= fuse0 + (fuse1 - fuse0) * order))[0]
+            if len(due):
+                state[due] = 2
+                popped += len(due)
+                ang = nrng.uniform(0, math.tau, (len(due), f_n))
+                newf = np.zeros((len(due) * f_n, 5))
+                newf[:, 0] = np.repeat(P[due, 0], f_n)
+                newf[:, 1] = np.repeat(P[due, 1], f_n)
+                newf[:, 2] = (np.cos(ang) * f_speed).ravel()
+                newf[:, 3] = (np.sin(ang) * f_speed).ravel()
+                newf[:, 4] = f_life
+                F = np.vstack([F, newf])
+                k = int(due[0])
+                col = hsv(hue0 - 0.62 * float(order[k]), 0.85, 1.0)
+                rings.append([float(P[k, 0]), float(P[k, 1]), col, 0.0])
+                v.audio.note(t, penta(int(order[k] * 22), 50), 0.26, "marimba", channel="p", min_gap=0.05)
+        parts.step(1 / v.fps)
+        flash = max(0.0, flash - 2.5 / v.fps)
+        for r_ in rings:
+            r_[3] += 1 / v.fps
+        rings = [r_ for r_ in rings if r_[3] < 0.3][-50:]
+
+        if not v.dry:
+            v.begin(bg=mix((8, 9, 16), (150, 110, 60), flash * 0.5))
+            for i in np.nonzero(state < 2)[0]:
+                if state[i] == 0:
+                    v.circle(hsv(hue0 - 0.62 * float(order[i]), 0.75, 0.95), P[i], 8)
+                else:                            # 火がついた点は白くふくらむ
+                    v.circle((255, 255, 255), P[i], 8 + 7 * min(1.0, max(0.0, t - lit_at[i]) / fuse0))
+            for x, y, col, age in rings:
+                v.circle(mix(col, (8, 9, 16), age / 0.3), (x, y), 10 + 110 * age, width=3)
+            for x, y, _vx, _vy, life in F:
+                v.circle((255, 235, 170), (x, y), 2 + 3 * life / f_life)
+            if boom_at is None:
+                v.circle((235, 235, 240), bomb, bomb_r + 5)
+                v.circle((16, 16, 22), bomb, bomb_r)
+                v.text("BOMB", 44, bomb, color=(235, 235, 240), outline=0)
+            else:
+                age = t - boom_at
+                for k in range(3):
+                    rr = (age - 0.12 * k) * 1700
+                    if rr > 0:
+                        v.circle(mix((255, 240, 200), (8, 9, 16), min(1.0, age / 1.4)), bomb, rr, width=10)
+            if ball_on:
+                v.circle((255, 255, 255), ball, 15)
+            parts.draw(v)
+            v.text("1 ball, 1,000 dots", 100, (CX, 150))
+            v.text("A spark sets off the next dot", 50, (CX, 232), color=(200, 205, 220), outline=3)
+            v.text(f"{popped:,} / {n:,}", 84, (CX, 330))
+        v.end(glow=0.3)
+        if boom_at is not None and t - boom_at > 2.6:
+            break
+        if boom_at is None and t > 3 and not len(F) and not (state == 1).any():
+            if v.dry:
+                v.frames = int(99 * v.fps)       # 連鎖が途中で止まった（このシードは使わない）
+            return {"result": f"chain stopped at {popped} (t={t:.1f})", "stopped": True}
+        if v.t > 80:
+            break
+    return {"result": f"{popped} of {n} dots, then the bomb"}

@@ -87,6 +87,10 @@ SIMS = {
         "run": sims_fill.run_blackhole, "length": (24, 42), "ja": "育っていくブラックホールから逃げる生き残り戦（8 色）",
         "titles": ["吸い込まれたら脱落。最後に残るのは？", "Don't fall in - last ball wins"],
     },
+    "chain": {
+        "run": sims_party.run_chain, "length": (24, 38), "ja": "1 個のボールから 1,000 個の点へ連鎖が走り、最後に爆弾へ届く",
+        "titles": ["1個のボールが、1,000個の点に火をつける", "1 ball, 1,000 dots, 1 bomb"],
+    },
     "merge": {
         "run": sims_party.run_merge, "length": (26, 40), "ja": "同じ数字のボールが触れるとまとまって倍になる（1024 まで）",
         "titles": ["同じ数字がくっつくと倍。1024まで", "Same number = merge. Can it reach 1024?"],
@@ -420,6 +424,16 @@ COPY.update({
         "rule_ja": "2本のアームが逆向きに回っています。すれ違うアームに挟まれて潰されたボールは2個に増え、その瞬間の色になります。",
         "ask_en": "Which color took over the most?", "ask_ja": "一番広がったのは何色？",
         "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "multiply", "ボール 増える"],
+    },
+    "chain": {
+        "en": ["1 ball, 1,000 dots, 1 bomb", "One spark sets off 1,000 dots", "Watch the chain reaction reach the bomb"],
+        "ja": ["1個のボールが、1,000個の点に火をつける", "火花1つで1,000個が連鎖", "連鎖が爆弾に届くまで"],
+        "rule_en": "One ball drops onto the first dot. A dot that is hit pops and throws sparks, and every spark sets off the "
+                   "dot it touches. The chain runs down the winding track until it reaches the bomb.",
+        "rule_ja": "1個のボールが最初の点に落ちます。当たった点は弾けて火花を飛ばし、火花が触れた点も弾けます。"
+                   "連鎖は折り返す帯をたどって、最後に爆弾へ届きます。",
+        "ask_en": "Did you watch it to the end?", "ask_ja": "最後まで見た？",
+        "hash": ["#chainreaction", "#satisfying"], "keys": ["chain reaction", "satisfying", "domino", "連鎖"],
     },
     "merge": {
         "en": ["Same number = merge. Can it reach 1024?", "2 + 2 = 4, 4 + 4 = 8 ... all the way to 1024", "Every merge doubles the number"],
