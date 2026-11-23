@@ -305,17 +305,17 @@ def post_meta(name, meta, seed=0):
     song = meta.get("song")
     credit_en = f"Music: {song['title']} / {song['composer']} (public domain, synthesized)" if song else ""
     credit_ja = f"曲: {song.get('title_ja', song['title'])}（{song['composer']}、著作権切れ。音は自作の合成音）" if song else ""
-    tags_line = " ".join(c["hash"] + COMMON_HASH)
+    tags_line = " ".join(dict.fromkeys(c["hash"] + COMMON_HASH))       # 同じタグを 2 回書かない
     desc_en = "\n".join(x for x in [c["rule_en"], c["ask_en"], credit_en, "", tags_line] if x is not None)
     desc_ja = "\n".join(x for x in [c["rule_ja"], c["ask_ja"], credit_ja, "", tags_line] if x is not None)
     desc_en = desc_en.replace("\n\n\n", "\n\n")
     desc_ja = desc_ja.replace("\n\n\n", "\n\n")
     # TikTok と X は世界向けに英語のみ。
     # X はタイムラインで動画の上に出る 1 行だけにする（ハッシュタグは X では効果が薄く、宣伝っぽく見える）
-    tiktok = f"{en}\n{' '.join(c['hash'] + ['#satisfying', '#simulation', '#fyp'])}"
+    tiktok = f"{en}\n{' '.join(dict.fromkeys(c['hash'] + ['#satisfying', '#simulation', '#fyp']))}"
     x_post = en
     return {"type": name, "label_ja": SIMS[name]["ja"], "title": en, "description": desc_en,
-            "title_ja": ja, "description_ja": desc_ja, "tags": c["keys"] + COMMON_KEYS,
+            "title_ja": ja, "description_ja": desc_ja, "tags": list(dict.fromkeys(c["keys"] + COMMON_KEYS)),
             "tiktok_caption": tiktok, "x_post": x_post}
 
 

@@ -62,6 +62,28 @@ COUNTRY = {"US": ("アメリカ", -6), "IN": ("インド", 5.5), "GB": ("イギ�
            "IQ": ("イラク", 3), "DZ": ("アルジェリア", 1), "MA": ("モロッコ", 1), "UA": ("ウクライナ", 2), "NL": ("オランダ", 1)}
 
 
+COMMENTS_URL = "https://www.googleapis.com/youtube/v3/commentThreads"
+
+
+def fetch_comments(token, ids, per_video=5):
+    """動画ごとの新しいコメント（本文と日付だけ。書いた人の名前は記録しない）。戻り値: {id: [(日付, 本文)]}"""
+    out = {}
+    for vid in ids:
+        r = requests.get(COMMENTS_URL, timeout=30, headers={"Authorization": f"Bearer {token}"}, params={
+            "part": "snippet", "videoId": vid, "maxResults": per_video, "order": "time", "textFormat": "plainText"})
+        if r.status_code != 200:
+            print(f"comments failed for {vid}: HTTP {r.status_code}")
+            continue
+        rows = []
+        for it in r.json().get("items", []):
+            sn = it["snippet"]["topLevelComment"]["snippet"]
+            text = " ".join((sn.get("textDisplay") or "").split())[:200]
+            rows.append((sn.get("publishedAt", "")[:10], text, int(sn.get("likeCount", 0))))
+        if rows:
+            out[vid] = rows
+    return out
+
+
 def fetch_public(token, ids):
     """再生数・高評価・コメント数・公開設定。戻り値: ({id: {...}}, エラー文)"""
     out = {}
@@ -170,11 +192,12 @@ def load_other():
     return {}
 
 
-def render(posts, pub, ana, notes, now=None, other=None, buf=None, countries=None):
+def render(posts, pub, ana, notes, now=None, other=None, buf=None, countries=None, comments=None):
     now = now or datetime.now(JST)
     other = other or {}
     buf = buf or {}
     countries = countries or []
+    comments = comments or {}
     out = ["# 動画の数字", "",
            f"最終更新: {now.strftime('%Y-%m-%d %H:%M')} JST ／ 1 日 1 回、自動で更新されます", ""]
     out += [f"> {n}" for n in notes]
@@ -200,9 +223,11 @@ def render(posts, pub, ana, notes, now=None, other=None, buf=None, countries=Non
     def manual(p, key):
         service, metric_names = ("tiktok", ("views",)) if key == "tiktok_views" else ("x", ("impressions", "views"))
         got = (buf.get(p.get("file", ""), {}) or {}).get(service) or {}
-        for m in metric_names:
-            if got.get(m) is not None:
-                return f"{got[m]:,.0f}"
+        # Buffer は、数字を持っていない投稿にも全項目 0 を返す。全部 0 のときは「取れていない」として扱う
+        if any(v for k, v in got.items() if not k.startswith("_") and isinstance(v, (int, float))):
+            for m in metric_names:
+                if got.get(m) is not None:
+                    return f"{got[m]:,.0f}"
         rec = other.get(p.get("file", ""), {})
         if rec.get(key) in (None, ""):
             return "—"
@@ -264,6 +289,18 @@ def render(posts, pub, ana, notes, now=None, other=None, buf=None, countries=Non
             mid = vs[len(vs) // 2] if len(vs) % 2 else (vs[len(vs) // 2 - 1] + vs[len(vs) // 2]) / 2
             pct = f"{sum(g['pct']) / len(g['pct']):.0f}%" if g["pct"] else "—"
             out.append(f"| {key} | {len(vs)} | {sum(vs) / len(vs):,.0f} | {mid:,.0f} | {pct} |")
+    if comments:
+        out += ["", "## 新しいコメント（YouTube）", "",
+                "動画ごとに新しい順で 5 件まで。次に作る動画の手がかりにする。", ""]
+        for p, vid, d, a, an in rows:
+            if vid not in comments:
+                continue
+            out.append(f"**{p['type']}**（{d.month}/{d.day}）: [{p.get('title', '')}]({p['youtube_url']})")
+            out.append("")
+            for day, text, likes in comments[vid]:
+                safe = text.replace("|", "/").replace("<", "＜").replace(">", "＞")
+                out.append(f"- {day[5:].replace('-', '/')} 「{safe}」" + (f"（高評価 {likes}）" if likes else ""))
+            out.append("")
     if countries:
         total = sum(n for _c, n in countries) or 1
         times = next_post.POST_TIMES
@@ -284,7 +321,7 @@ def main():
         with open(POSTS, "r", encoding="utf-8") as f:
             posts = json.load(f)
     ids = [v for v in (video_id(p.get("youtube_url")) for p in posts) if v]
-    notes, pub, ana, countries = [], {}, {}, []
+    notes, pub, ana, countries, comments = [], {}, {}, [], {}
     if ids:
         token = access_token()
         pub, err = fetch_public(token, ids)
@@ -305,6 +342,7 @@ def main():
             with open(post_log.PAGE, "w", encoding="utf-8") as f:
                 f.write(post_log.render(posts))
         first = min(datetime.fromisoformat(p["posted_at"]) for p in posts if video_id(p.get("youtube_url")))
+        comments = fetch_comments(token, [v for v in ids if pub.get(v, {}).get("comments")])
         countries, c_err = fetch_countries(token, (first - timedelta(days=1)).strftime("%Y-%m-%d"))
         if c_err:
             print(f"country stats failed: {c_err}")
@@ -322,7 +360,7 @@ def main():
         print(f"buffer posts: {len(buffer_posts)} fetched, matched to {len(buf)} videos")
     os.makedirs(os.path.dirname(PAGE), exist_ok=True)
     with open(PAGE, "w", encoding="utf-8") as f:
-        f.write(render(posts, pub, ana, notes, other=load_other(), buf=buf, countries=countries))
+        f.write(render(posts, pub, ana, notes, other=load_other(), buf=buf, countries=countries, comments=comments))
 
     if pub:                                 # 日ごとの記録（伸び方をあとで見られるように）
         history = []
