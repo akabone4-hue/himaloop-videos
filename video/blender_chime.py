@@ -49,7 +49,9 @@ def main():
         lay = json.load(f)
     os.makedirs(a.out, exist_ok=True)
     fps, total, g, br = lay["fps"], lay["total"], lay["g"], lay["br"]
-    legs, plats = lay["legs"], lay["plats"]
+    plats = lay["plats"]
+    all_legs = lay.get("balls") or [lay["legs"]]               # ボールごとの経路（chime2 は 2 個）
+    many = len(all_legs) > 1
     n_frames = int(total * fps)
     with open(os.path.join(a.out, "chime.json"), "w") as f:
         json.dump({"fps": fps, "n_frames": n_frames}, f)
@@ -60,7 +62,7 @@ def main():
     def to3d(x, y):
         return x * SCALE, -y * SCALE
 
-    def ball_at(t):
+    def ball_at(t, legs):
         k = 0
         for j in range(len(legs)):
             if legs[j][0] <= t:
@@ -71,7 +73,7 @@ def main():
         tau = max(0.0, t - lt)
         return lx + lvx * tau, ly + lvy * tau + 0.5 * g * tau * tau
 
-    def ground_at(t):                              # カメラが追う点（着地点から次の着地点へまっすぐ）
+    def ground_one(t, legs):                       # カメラが追う点（着地点から次の着地点へまっすぐ）
         k = 0
         for j in range(len(legs)):
             if legs[j][0] <= t:
@@ -79,10 +81,14 @@ def main():
             else:
                 break
         if k + 1 >= len(legs):
-            return ball_at(t)
+            return legs[k][1], legs[k][2]
         p, q = legs[k], legs[k + 1]
-        u = (t - p[0]) / max(1e-6, q[0] - p[0])
+        u = min(1.0, max(0.0, (t - p[0]) / max(1e-6, q[0] - p[0])))
         return p[1] + (q[1] - p[1]) * u, p[2] + (q[2] - p[2]) * u
+
+    def ground_at(t):                              # ボールが複数なら、その平均を追う
+        pts = [ground_one(t, legs) for legs in all_legs]
+        return sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
@@ -100,7 +106,7 @@ def main():
             col = colorsys.hsv_to_rgb(key / 12.0, 0.85, 1.0)
             mats[key] = linear(col)
         u = (midi - lo) / max(1, hi - lo)
-        depth = 1.6 - 0.7 * u                       # 低い音ほど奥行きが長い（本物の鉄琴と同じ）
+        depth = (1.5 - 0.4 * u) if many else (1.6 - 0.7 * u)    # 低い音ほど奥行きが長い（本物の鉄琴と同じ）
         bpy.ops.mesh.primitive_cube_add(size=1.0, location=(X, 0.0, Z), rotation=(0.0, -ang, 0.0))
         ob = bpy.context.object
         ob.scale = (length * SCALE, depth, 0.16)
@@ -118,10 +124,15 @@ def main():
             pin.data.materials.append(mats.setdefault("pin", None) or _pin_mat(mats))
 
     # ---- ボール
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=br * SCALE, segments=32, ring_count=16)
-    ball = bpy.context.object
-    bpy.ops.object.shade_smooth()
-    ball.data.materials.append(material("ball", (0.92, 0.92, 0.95), 0.12, 1.0))
+    balls = []
+    looks = [(0.92, 0.92, 0.95), (1.0, 0.72, 0.25)]            # 銀と金
+    for i, legs in enumerate(all_legs):
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=br * SCALE, segments=32, ring_count=16)
+        ob = bpy.context.object
+        bpy.ops.object.shade_smooth()
+        ob.data.materials.append(material(f"ball{i}", looks[i % 2], 0.12, 1.0))
+        # 2 個のときは手前と奥に分ける（空中ですれ違っても、ぶつからない）
+        balls.append((ob, legs, (-0.3 + 0.6 * i) if many else 0.0))
 
     # ---- 背景の板（影が落ちて奥行きが出る）
     xs = [p[0] for p in plats]
@@ -177,17 +188,18 @@ def main():
         if (f - 1) % a.step:
             continue
         sc.frame_set(f)
-        bx, by = ball_at(t)
-        X, Z = to3d(bx, by)
-        ball.location = (X, 0.0, Z)
+        for ob, legs, depth_y in balls:
+            bx, by = ball_at(t, legs)
+            X, Z = to3d(bx, by)
+            ob.location = (X, depth_y, Z)
         for b in bars:                              # 当たった鍵盤は少し沈んで光り、すぐ戻る
             age = t - b["t"]
             dip = 0.07 * math.exp(-age / 0.07) * math.cos(age * 40) if age >= 0 else 0.0
             b["ob"].location = b["home"] + b["down"] * dip
             glow = 2.6 * math.exp(-age / 0.22) if age >= 0 else 0.0
             b["mat"].node_tree.nodes["Principled BSDF"].inputs["Emission Strength"].default_value = glow
-        cam.location = (camx, -5.4, camz + 2.9)
-        look = Vector((camx, 0.0, camz + 0.75)) - cam.location
+        cam.location = (camx, -6.0, camz + 3.2) if many else (camx, -5.4, camz + 2.9)   # 2 個のときは弧が高いので少し引く
+        look = Vector((camx, 0.0, camz + (1.0 if many else 0.75))) - cam.location
         cam.rotation_euler = look.to_track_quat("-Z", "Y").to_euler()
         sc.render.filepath = os.path.join(a.out, f"f_{f:04d}.png")
         bpy.ops.render.render(write_still=True)

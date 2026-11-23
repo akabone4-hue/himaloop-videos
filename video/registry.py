@@ -51,6 +51,10 @@ SIMS = {
         "run": sims_3d.run_chime, "length": (15, 45), "search": False, "heavy": True, "ja": "3D。鉄琴の上をボールが跳ねて曲を鳴らす",
         "titles": ["ボールが鉄琴で「{song}」を弾く", "A ball plays {song} on a glockenspiel"],
     },
+    "chime2": {
+        "run": sims_3d.run_chime2, "length": (15, 45), "search": False, "heavy": True, "ja": "3D。鉄琴の 2 個版（銀と金のボールが 1 枚おきに踏んで追い越し合う）",
+        "titles": ["2個のボールが交代で「{song}」を弾く", "2 balls take turns playing {song}"],
+    },
     "towers": {
         "run": sims_tower.run_towers, "length": (30, 55), "search": False, "ja": "条件の違う 3 つの塔。10 階を最初に壊すのは？",
         "titles": ["3つの塔、10階を最初に壊すのは？", "3 towers, 3 rules - who breaks floor 10 first?"],
@@ -229,6 +233,16 @@ COPY = {
         "rule_en": "Every bar is tuned to one note. The ball lands on the next bar exactly on the beat.",
         "rule_ja": "鍵盤は1枚ずつ音が決まっています。ボールは拍に合わせて、次の鍵盤へちょうど着地します。",
         "ask_en": "Which song should the ball play next?", "ask_ja": "次に弾いてほしい曲はコメントで。",
+        "hash": ["#satisfying", "#classicalmusic"], "keys": ["glockenspiel", "music ball", "marble music", "鉄琴 ボール"],
+    },
+    "chime2": {
+        "en": ["2 balls take turns playing {song}", "{song}, played by 2 balls", "Silver and gold play {song}"],
+        "ja": ["2個のボールが交代で「{songj}」を弾く", "銀と金のボールで「{songj}」", "2個で弾く「{songj}」"],
+        "rule_en": "Every bar is tuned to one note. The silver ball and the gold ball take turns: each lands on every "
+                   "second bar, exactly on the beat, leaping over the other.",
+        "rule_ja": "鍵盤は1枚ずつ音が決まっています。銀と金のボールが交代で、1枚おきの鍵盤へ拍ちょうどに着地し、"
+                   "お互いを飛び越えながら進みます。",
+        "ask_en": "Which song should they play next?", "ask_ja": "次に弾いてほしい曲はコメントで。",
         "hash": ["#satisfying", "#classicalmusic"], "keys": ["glockenspiel", "music ball", "marble music", "鉄琴 ボール"],
     },
     "towers": {

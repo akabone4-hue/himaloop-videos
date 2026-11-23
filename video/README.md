@@ -17,6 +17,7 @@
 | `cam` | arms の仲間。円の中心から伸びた 3 本の腕の先で、ローラーが壁すれすれを回る。ローラーと壁にはさまれたボールが 2 つに割れる。回転がだんだん速くなり、終盤に一気に増える |
 | `towers` | 条件の違う 3 つの塔（少数で階ごとに 3 倍／階ごとに 2 倍／最初から大勢で階ごとに一定数ずつ増える）。10 階を最初に壊した塔が勝ち。数値は切りのいい数だけを使い、ほぼ同時に終わる組み合わせをあらかじめ探して入れてある |
 | `chime` | 3D。色つきの鉄琴の上をボールが弧を描いて跳ね、着地するたびに 1 音鳴る（次の音までが長いほど高く跳ぶ）。経路は `sims_course.arc_layout` が決め、絵は `blender_chime.py` が描く |
+| `chime2` | 3D。chime の 2 個版。銀と金のボールが鍵盤を 1 枚おきに踏み、追い越し合いながら曲を鳴らす |
 | `towers2` | towers の別バージョン。階ごとに 2 倍／毎秒決まった数ずつ増える／最初から大勢で増えない、の 3 つ |
 | `cannons` | towers の兄弟。3 本のレーンで砲台が上の壁を撃つ。撃つ速さが倍々になる 1 門／一定時間ごとに 1 門ずつ増える／最初から何門もある、の 3 つ |
 | `hexarms` | arms の別バージョン。六角形の角 3 つでアームが回る |
@@ -79,7 +80,7 @@ python video/make.py rings --preview       # 低画質で手早く確認
 | `sims_swarm.py` | rps |
 | `sims_party.py` | bomb / plinko / merge / chain |
 | `sims_tower.py` | towers / towers2 / cannons |
-| `sims_3d.py` | marble / faces / chime（3D。絵は `blender_marble.py` / `blender_cloth.py` / `blender_chime.py` が Blender で描き、ここで文字と音を重ねる） |
+| `sims_3d.py` | marble / faces / chime / chime2（3D。絵は `blender_marble.py` / `blender_cloth.py` / `blender_chime.py` が Blender で描き、ここで文字と音を重ねる） |
 | `sims_more.py` | weapon / bricks / bricks2 |
 | `sims_pack.py` | fill / gear / gear2 / arms / glass（ボール同士が押し合う型。物理エンジン pymunk を使用） |
 | `sims_board.py` | walls（盤上ゲーム。先に全部の手を決めてから再生する） |

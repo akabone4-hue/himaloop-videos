@@ -149,6 +149,49 @@ def run_chime(v, rng):
     return {"song": song, "result": f"{len(notes)} notes"}
 
 
+def run_chime2(v, rng):
+    """鉄琴の 2 個版。銀と金のボールが鍵盤を 1 枚おきに踏み、追い越し合いながら曲を鳴らす。
+    1 個あたりの間隔が倍になるので弧が高く、動きが大きい。"""
+    songs = melodies.ALL[:]
+    rng.shuffle(songs)
+    for song in songs:                          # ゆっくりした曲は弧が高くなりすぎるので、置ける曲を選ぶ
+        got = sims_course.arc_layout2(rng, song)
+        if got:
+            break
+    else:
+        raise RuntimeError("chime2: no song could be laid out for two balls")
+    notes, end_t, two, plats, _vx = got
+    lift = 12 if min(m for _t, m in notes) < 57 else 0
+    fps3d = 30
+    total = end_t + 1.4
+
+    def setup(work):
+        path = os.path.join(work, "layout.json")
+        with open(path, "w") as f:
+            json.dump({"fps": fps3d, "total": total, "g": sims_course.MUSIC_G2, "br": 22.0, "balls": two,
+                       "plats": [list(p) + [m] for p, (_t, m) in zip(plats, notes)]}, f)
+        return ["--layout", path]
+
+    work, info = _blender("blender_chime.py", "chime.json", v, rng, setup=setup)
+    for i, (t, midi) in enumerate(notes):
+        gap_t = (notes[i + 1][0] - t) if i + 1 < len(notes) else 1.5
+        v.audio.note(t, midi + lift + 12, 0.55, "glock", dur=gap_t + 0.35)
+    rep = max(1, round(v.fps / fps3d))
+    band = None if v.dry else _top_band(320)
+    for f in range(1, info["n_frames"] + 1):
+        if not v.dry:
+            img = _frame(work, f)
+        for _ in range(rep):
+            if not v.dry:
+                v.surf.blit(img, (0, 0))
+                v.surf.blit(band, (0, 0))
+                v.text(song["title"], 100 if len(song["title"]) < 16 else 64, (CX, 170))
+                v.text("2 balls take turns", 60, (CX, 258), color=(215, 218, 230), outline=3)
+            v.end(glow=0.0)
+    _cleanup(work)
+    return {"song": song, "result": f"{len(notes)} notes, 2 balls"}
+
+
 def run_marble(v, rng):
     work, info = _blender("blender_marble.py", "race.json", v, rng)
     names, colors = info["names"], [tuple(c) for c in info["colors"]]

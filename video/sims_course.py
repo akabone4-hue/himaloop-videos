@@ -1,6 +1,7 @@
 """sims_course.py — コース系: マーブルレース / 曲に合わせて跳ねるボール"""
 
 import math
+import random
 
 import pygame
 
@@ -338,6 +339,57 @@ def arc_layout(rng, song, br=22.0):
     vx0 = max(300.0, min(470.0, 70.0 / shortest))            # 速い曲ほど横に速く進む（板どうしが重ならないように）
     legs, plats = _arc_path(rng, notes, vx0, br)
     return notes, end_t, legs, plats, vx0
+
+
+MUSIC_G2 = MUSIC_G / 1.7      # 2 個版の重力。間隔が倍になるぶん弱くして、弧が画面の外まで上がらないようにする
+
+
+def two_ball_legs(plats, legs, br=22.0):
+    """1 本の経路の板を、2 個のボールが 1 枚おきに踏む（追い越し合いながら進む）。
+    1 個あたりの間隔が倍になるので、弧は 1 個版より高くなる。
+    戻り値: (ボールごとの legs, 弧がほかの板に近づきすぎた回数)。"""
+    g = MUSIC_G2
+    land = [(l[0], l[1], l[2]) for l in legs[1:]]              # 各音の着地点 (時刻, x, y)
+    out, bad = [], 0
+    for who in (0, 1):
+        idx = list(range(who, len(land), 2))
+        t0, x, y = land[idx[0]]
+        fall = 0.55
+        one = [(t0 - fall, x, y - 0.5 * g * fall * fall, 0.0, 0.0)]
+        for a, b in zip(idx, idx[1:] + [None]):
+            ta, xa, ya = land[a]
+            if b is None:                                      # 最後の音のあとは、軽く跳ねて画面の外へ
+                one.append((ta, xa, ya, 130.0 * (1 if who == 0 else -1), -560.0))
+                break
+            tb, xb, yb = land[b]
+            dt = tb - ta
+            vx, vy = (xb - xa) / dt, (yb - ya - 0.5 * g * dt * dt) / dt
+            one.append((ta, xa, ya, vx, vy))
+            for k in range(1, 24):
+                tau = dt * k / 24
+                px, py = xa + vx * tau, ya + vy * tau + 0.5 * g * tau * tau
+                for j, p in enumerate(plats):
+                    if j in (a, b):
+                        continue
+                    hx, hy = math.cos(p[2]) * p[4] / 2, math.sin(p[2]) * p[4] / 2
+                    x0, y0 = p[0] - hx, p[1] - hy
+                    dx, dy = 2 * hx, 2 * hy
+                    u = max(0.0, min(1.0, ((px - x0) * dx + (py - y0) * dy) / (dx * dx + dy * dy)))
+                    if math.hypot(px - x0 - dx * u, py - y0 - dy * u) < br + 6:
+                        bad += 1
+        out.append(one)
+    return out, bad
+
+
+def arc_layout2(rng, song, br=22.0, tries=40):
+    """2 個のボール用の経路。どの弧もほかの板に当たらない置き方が見つかるまで、置き直す。
+    見つからなければ None（ゆっくりした曲は弧が高くなりすぎて、上の段の板に当たりやすい）。"""
+    for _ in range(tries):
+        notes, end_t, legs, plats, vx0 = arc_layout(random.Random(rng.randrange(1 << 30)), song, br)
+        two, bad = two_ball_legs(plats, legs, br)
+        if bad == 0:
+            return notes, end_t, two, plats, vx0
+    return None
 
 
 def _wall_path(rng, notes, sx, sy, br):
