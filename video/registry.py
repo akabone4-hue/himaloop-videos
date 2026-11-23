@@ -87,6 +87,10 @@ SIMS = {
         "run": sims_fill.run_fillwave, "length": (22, 40), "search": False, "ja": "形を埋め尽くしたあと、色の波が走る",
         "titles": ["いっぱいになったら、色の波", "Wait for the wave"],
     },
+    "fillwave2": {
+        "run": sims_fill.run_fillwave2, "length": (22, 40), "search": False, "ja": "fillwave の別の形（星・三角・十字）",
+        "titles": ["星がいっぱいになったら、色の波", "Fill the shape, then wait for the wave"],
+    },
     "blackhole": {
         "run": sims_fill.run_blackhole, "length": (24, 42), "ja": "育っていくブラックホールから逃げる生き残り戦（8 色）",
         "titles": ["吸い込まれたら脱落。最後に残るのは？", "Don't fall in - last ball wins"],
@@ -315,6 +319,14 @@ COPY = {
     "fillwave": {
         "en": ["Wait for the wave", "Fill it up, then watch the colors line up", "Every wall hit = +1... until it's full"],
         "ja": ["いっぱいになったら、色の波", "埋め尽くしたあと、色がそろう", "壁に当たるたびに+1、いっぱいになるまで"],
+        "rule_en": "Every ball that hits the wall adds one more. When the shape is full, a wave sorts the colors.",
+        "rule_ja": "壁に当たるたびにボールが1個増えます。形がいっぱいになると、色の波が走って虹色に並びます。",
+        "ask_en": "Which shape should be next?", "ask_ja": "次はどんな形がいい？",
+        "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "fill", "ボール 増える"],
+    },
+    "fillwave2": {
+        "en": ["Fill the shape, then wait for the wave", "Every wall hit = +1... until it's full", "1 ball fills the whole shape"],
+        "ja": ["いっぱいになったら、色の波", "壁に当たるたびに+1、いっぱいになるまで", "ボール1個が形を埋め尽くす"],
         "rule_en": "Every ball that hits the wall adds one more. When the shape is full, a wave sorts the colors.",
         "rule_ja": "壁に当たるたびにボールが1個増えます。形がいっぱいになると、色の波が走って虹色に並びます。",
         "ask_en": "Which shape should be next?", "ask_ja": "次はどんな形がいい？",

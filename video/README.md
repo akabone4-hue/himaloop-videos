@@ -32,6 +32,7 @@
 | `chain` | 折り返す帯に並んだ 1,000 個の点。上から落ちた 1 個のボールをきっかけに、弾けた点の火花がとなりの点を弾けさせ、連鎖が帯をたどって最後に爆弾へ届く |
 | `merge` | 左右に動く口から数字の付いたボールが落ちる。同じ数字どうしが触れるとまとまって倍になり、1024 ができたら全部弾ける |
 | `fillwave` | 形（ハート・六角形・円・ひし形）の中でボールが増え続け、いっぱいになると色の波が走って虹色に並び、最後に弾ける |
+| `fillwave2` | fillwave の別の形（星・三角・十字） |
 | `blackhole` | 8 色のボールが、育っていくブラックホールから逃げる。触れたら脱落。最後に残った 1 個が勝ち |
 | `rps` | グー・チョキ・パーの駒が、勝てる相手を追い、負ける相手から逃げる。触れた相手を仲間に変え、1 種類になったら終わり |
 | `faces` | 3D。同じ布を面の数だけ変えて（16 → 4096 面）順に球の上へ落とす |
@@ -76,7 +77,7 @@ python video/make.py rings --preview       # 低画質で手早く確認
 | `sims_arena.py` | colorwar / battle |
 | `sims_course.py` | music（と、以前の 2D 版 marble） |
 | `sims_squeeze.py` | hammer / cam / hexarms / beams / survive / survive2 / smash（「潰されると…」の土台。仕掛けを 1 つ書けば新しい型になる） |
-| `sims_fill.py` | fillwave / blackhole |
+| `sims_fill.py` | fillwave / fillwave2 / blackhole |
 | `sims_swarm.py` | rps |
 | `sims_party.py` | bomb / plinko / merge / chain |
 | `sims_tower.py` | towers / towers2 / cannons |

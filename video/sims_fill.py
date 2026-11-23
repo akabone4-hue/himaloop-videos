@@ -30,6 +30,20 @@ def _outline(kind, size=430.0, n=96):
             pts.append((CX + math.cos(a) * size, CY + math.sin(a) * size))
     elif kind == "diamond":
         pts = [(CX, CY - size * 1.05), (CX + size * 0.82, CY), (CX, CY + size * 1.05), (CX - size * 0.82, CY)]
+    elif kind == "star":                        # 5 つの角の星（内側の角は浅め。深いと角にボールが届きにくい）
+        for i in range(10):
+            a = math.radians(-90 + 36 * i)
+            rr = size * (1.12 if i % 2 == 0 else 0.62)
+            pts.append((CX + math.cos(a) * rr, CY + math.sin(a) * rr + 20))
+    elif kind == "triangle":
+        for i in range(3):
+            a = math.radians(-90 + 120 * i)
+            pts.append((CX + math.cos(a) * size * 1.18, CY + math.sin(a) * size * 1.18 + 90))
+    elif kind == "plus":                        # 十字
+        a_, b_ = size * 1.0, size * 0.42
+        pts = [(CX - b_, CY - a_), (CX + b_, CY - a_), (CX + b_, CY - b_), (CX + a_, CY - b_), (CX + a_, CY + b_),
+               (CX + b_, CY + b_), (CX + b_, CY + a_), (CX - b_, CY + a_), (CX - b_, CY + b_), (CX - a_, CY + b_),
+               (CX - a_, CY - b_), (CX - b_, CY - b_)]
     else:                                       # circle
         for i in range(n):
             a = i / n * math.tau
@@ -41,9 +55,14 @@ def _area(pts):
     return abs(sum(x0 * y1 - x1 * y0 for (x0, y0), (x1, y1) in zip(pts, pts[1:] + pts[:1]))) / 2
 
 
-def run_fillwave(v, rng):
+def run_fillwave2(v, rng):
+    """埋め尽くしの別バージョン: 星・三角・十字。"""
+    return run_fillwave(v, rng, kinds=("star", "triangle", "plus"))
+
+
+def run_fillwave(v, rng, kinds=("heart", "hexagon", "circle", "diamond")):
     """壁に当たるたびに 1 個増える。形がいっぱいになったら、左から右へ色の波が走って虹色に並び、最後に弾ける。"""
-    kind = rng.choice(["heart", "hexagon", "circle", "diamond"])
+    kind = rng.choice(list(kinds))
     pts = _outline(kind)
     br = 11.0
     cap = int(_area(pts) * 0.70 / (math.pi * br * br))
