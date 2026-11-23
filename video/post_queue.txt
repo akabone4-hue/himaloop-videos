@@ -15,8 +15,7 @@ bomb 1
 towers2 1
 blackhole 2
 bricks2 3
-rps 5
+rps2 5
 plinko 1
 fillwave 2
 beams 7
-rps2 5
