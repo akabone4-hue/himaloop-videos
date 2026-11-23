@@ -2,6 +2,7 @@
 
   bomb    8 色のボールが円の中を逃げ回る。爆弾は触れた相手に移る。導火線が尽きたとき持っていた色が脱落。最後の 1 個が勝ち
   plinko  600 個のボールを釘の板に落とす。下の仕切りに積もった山が、最後に色の波で数えられる
+  merge   数字の付いたボールが落ちてくる。同じ数字どうしが触れるとまとまって倍になる。1024 ができたら終わり
 """
 
 import math
@@ -376,3 +377,141 @@ def run_plinko(v, rng):
         if v.t > 80:
             break
     return {"result": f"counts {counts}", "counts": counts}
+
+
+# ============================================================ merge
+MERGE_TOP = 10                                  # 2 の 10 乗 = 1024 ができたら終わり
+
+
+def _merge_r(k):
+    return 21.0 * 1.24 ** k
+
+
+def run_merge(v, rng):
+    """上の口が左右に動きながら、数字の付いたボールを落とす。同じ数字どうしが触れると 1 個にまとまって倍になる。
+    1024 ができたら、全部が弾けて終わり。"""
+    left, right = CX - 430.0, CX + 430.0
+    top, floor_y = 380.0, 1560.0
+    sp = _space(gravity=1700.0)
+    sp.iterations = 14
+    st = sp.static_body
+    dip = 150.0                                 # 底は V 字。大きい玉がまん中に集まって、同じ数字どうしが出会いやすい
+    WALLS = (((left, top - 200), (left, floor_y - dip)), ((right, top - 200), (right, floor_y - dip)),
+             ((left, floor_y - dip), (CX, floor_y)), ((CX, floor_y), (right, floor_y - dip)))
+    for p, q in WALLS:
+        s_ = pymunk.Segment(st, p, q, 6)
+        s_.elasticity, s_.friction = 0.1, 0.05
+        sp.add(s_)
+    pairs = []
+
+    def on_touch(arb, _space, _data):
+        a, b = arb.shapes
+        if a.level == b.level:
+            pairs.append((a, b))
+
+    sp.on_collision(2, 2, begin=on_touch)
+    balls = {}                                  # shape → [body, レベル, できた時刻]
+
+    def add(pos, k, t, vel=(0, 0)):
+        r = _merge_r(k)
+        b, c = _ball(sp, pos, r, vel=vel, elasticity=0.1, friction=0.05, mass=0.5 * 1.5 ** k)
+        c.collision_type = 2
+        c.level = k
+        balls[c] = [b, k, t]
+        return c
+
+    def color(k):
+        return hsv(0.58 - 0.065 * k, 0.78, 1.0) if k < MERGE_TOP else (255, 255, 255)
+
+    n_steps, dt = _steps(v)
+    next_drop = 0.5
+    dropped = 0
+    best = 1
+    pops = []                                   # まとまった瞬間の輪 [x, y, 色, 経過, 半径]
+    parts = Particles()
+    done_at = burst_at = None
+    nozzle_x = CX
+    while True:
+        t = v.t
+        # 落とす口は一定の調子で左右に往復する
+        nozzle_x = CX + math.sin(t * 1.9) * 330
+        if done_at is None and t >= next_drop:
+            # 落ちてくる数字は、いちばん大きい玉に合わせて上がっていく（小さい数字ばかりだと、いつまでも届かない）
+            lo = max(1, best - 6)
+            k = rng.choices((lo, lo + 1, lo + 2), weights=(6, 3, 1))[0]
+            add((nozzle_x, top - 120), k, t, vel=(0, 500))
+            dropped += 1
+            next_drop += max(0.085, 0.30 - 0.012 * dropped)
+            v.audio.play(t, 900, 0.10, "click", channel="d", min_gap=0.05)
+        for _ in range(n_steps):
+            sp.step(dt)
+            if pairs and done_at is None:
+                for a, b in pairs:
+                    if a in balls and b in balls and balls[a][1] == balls[b][1]:
+                        ba, bb = balls[a][0], balls[b][0]
+                        k = balls[a][1] + 1
+                        pos = ((ba.position.x + bb.position.x) / 2, (ba.position.y + bb.position.y) / 2)
+                        vel = ((ba.velocity.x + bb.velocity.x) / 2, (ba.velocity.y + bb.velocity.y) / 2)
+                        sp.remove(ba, a, bb, b)
+                        del balls[a], balls[b]
+                        add(pos, k, t, vel=vel)
+                        pops.append([pos[0], pos[1], color(k), 0.0, _merge_r(k)])
+                        v.audio.note(t, 48 + 3 * k + (k // 2), 0.25 + 0.05 * k, "marimba", channel=f"m{k}", min_gap=0.04)
+                        if k > best:
+                            best = k
+                            v.audio.note(t, 60 + 2 * k, 0.6, "glock")
+                        if k >= MERGE_TOP:
+                            done_at = t
+                            for i, mm in enumerate((60, 64, 67, 72, 76, 79)):
+                                v.audio.note(t + 0.06 * i, mm, 0.8, "piano")
+            pairs.clear()
+        if done_at is not None and burst_at is None and t - done_at > 1.3:
+            burst_at = t
+            v.audio.play(t, 70, 1.0, "thud")
+            for c, (b, k, _t0) in list(balls.items()):
+                if k < MERGE_TOP:
+                    parts.burst(rng, (b.position.x, b.position.y), color(k), n=10 + 3 * k, speed=700, life=0.9, size=7,
+                                gravity=False)
+                    sp.remove(b, c)
+                    del balls[c]
+        parts.step(1 / v.fps)
+        for p_ in pops:
+            p_[3] += 1 / v.fps
+        pops = [p_ for p_ in pops if p_[3] < 0.35]
+        height = min((b.position.y - _merge_r(k) for b, k, t0 in balls.values() if t - t0 > 1.0), default=floor_y)
+
+        if not v.dry:
+            v.begin(bg=(10, 10, 18))
+            pygame.draw.polygon(v.surf, (17, 19, 32), [(left, top - 200), (right, top - 200), (right, floor_y - dip),
+                                                       (CX, floor_y), (left, floor_y - dip)])
+            for p, q in WALLS:
+                v.line((235, 235, 240), p, q, 8)
+            # 落とす口
+            pygame.draw.rect(v.surf, (150, 155, 175), (int(nozzle_x - 34), int(top - 196), 68, 46), border_radius=8)
+            pygame.draw.rect(v.surf, (90, 94, 112), (int(nozzle_x - 22), int(top - 156), 44, 16), border_radius=4)
+            for x, y, col, age, r in pops:
+                v.circle(mix(col, (17, 19, 32), age / 0.35), (x, y), r + 90 * age, width=4)
+            for c, (b, k, _t0) in balls.items():
+                r = _merge_r(k)
+                x, y = b.position.x, b.position.y
+                col = color(k)
+                v.circle(mix(col, (255, 255, 255), 0.6), (x, y), r)
+                v.circle(col, (x, y), r - 3)
+                size = int(max(22, min(120, r * (1.15 if k < 3 else 0.95 if k < 6 else 0.75))))
+                v.text(str(2 ** k), size, (x, y + 1), color=(12, 12, 18), outline=0)
+            parts.draw(v)
+            v.text("Same number = merge", 92, (CX, 100))
+            if done_at is None:
+                v.text(f"biggest: {2 ** best}", 80, (CX, floor_y + 110), color=color(best))
+            else:
+                v.text(f"{2 ** MERGE_TOP}!", 190, (CX, floor_y + 130), color=(255, 255, 255), outline=7)
+        v.end(glow=0.22)
+        if burst_at is not None and t - burst_at > 2.2:
+            break
+        if height < top - 150 and done_at is None:            # あふれた（このシードは使わない）
+            if v.dry:
+                v.frames = int(99 * v.fps)                    # 長さの範囲から外して、シード探しで選ばれないようにする
+            return {"result": f"overflow at {t:.1f}s, biggest {2 ** best}", "overflow": True}
+        if v.t > 75:
+            break
+    return {"result": f"{dropped} balls dropped, reached {2 ** best}"}

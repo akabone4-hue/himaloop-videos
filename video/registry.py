@@ -87,6 +87,10 @@ SIMS = {
         "run": sims_fill.run_blackhole, "length": (24, 42), "ja": "育っていくブラックホールから逃げる生き残り戦（8 色）",
         "titles": ["吸い込まれたら脱落。最後に残るのは？", "Don't fall in - last ball wins"],
     },
+    "merge": {
+        "run": sims_party.run_merge, "length": (26, 40), "ja": "同じ数字のボールが触れるとまとまって倍になる（1024 まで）",
+        "titles": ["同じ数字がくっつくと倍。1024まで", "Same number = merge. Can it reach 1024?"],
+    },
     "survive2": {
         "run": sims_squeeze.run_survive2, "length": (24, 42), "ja": "大きさとライフの違う生き残り戦（小 3・中 4・大 15）",
         "titles": ["小さくて弱いか、大きくて強いか。生き残るのは？", "Small with 3 lives or big with 15 - who survives?"],
@@ -416,6 +420,16 @@ COPY.update({
         "rule_ja": "2本のアームが逆向きに回っています。すれ違うアームに挟まれて潰されたボールは2個に増え、その瞬間の色になります。",
         "ask_en": "Which color took over the most?", "ask_ja": "一番広がったのは何色？",
         "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "multiply", "ボール 増える"],
+    },
+    "merge": {
+        "en": ["Same number = merge. Can it reach 1024?", "2 + 2 = 4, 4 + 4 = 8 ... all the way to 1024", "Every merge doubles the number"],
+        "ja": ["同じ数字がくっつくと倍。1024まで", "2と2で4、4と4で8…1024までいける？", "くっつくたびに数字が倍"],
+        "rule_en": "Numbered balls drop from a nozzle that moves left and right. Two balls with the same number merge into one "
+                   "with double the number. When 1024 appears, everything else bursts.",
+        "rule_ja": "左右に動く口から、数字の付いたボールが落ちてきます。同じ数字どうしが触れると1個にまとまり、数字が倍になります。"
+                   "1024ができたら、ほかの全部が弾けます。",
+        "ask_en": "How long did you think it would take?", "ask_ja": "何秒かかると思った？",
+        "hash": ["#satisfying", "#merge"], "keys": ["merge balls", "satisfying", "number merge", "数字 合体"],
     },
     "survive2": {
         "en": ["Small with 3 lives or big with 15 - who survives?", "Small, medium or big?", "3 lives vs 4 lives vs 15 lives"],
