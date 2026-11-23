@@ -1,0 +1,12 @@
+{
+ "_説明": "TikTok と X の数字の記録。キーは動画のファイル名。as_of は記録した日付。",
+ "_例": {
+  "weapon_21.mp4": {
+   "tiktok_views": 0,
+   "tiktok_likes": 0,
+   "x_views": 0,
+   "x_likes": 0,
+   "as_of": "2026-11-16"
+  }
+ }
+}

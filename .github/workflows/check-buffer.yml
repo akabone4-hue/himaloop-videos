@@ -1,0 +1,66 @@
+name: Check Buffer (TikTok・X 投稿サービスの接続確認)
+
+# 投稿はせず、Buffer に接続されているチャンネルと API の書式を表示します。
+on:
+  workflow_dispatch:
+    inputs:
+      draft_test:
+        description: "true にすると、動画 1 本を公開置き場に上げ、Buffer に下書きとして登録できるか試す（公開はしない。下書きは確認後に消す）"
+        required: false
+        default: "false"
+      post_ids:
+        description: "状態を確認したい Buffer の投稿 ID（空白区切り。空欄なら確認しない）"
+        required: false
+        default: ""
+      describe:
+        description: "中身を表示したい API の型名（空白区切り。開発用）"
+        required: false
+        default: ""
+
+permissions:
+  contents: read     # このリポジトリの Releases から確認用の動画を取り出すため
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests
+      - name: Buffer
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+        run: python video/post_buffer.py --check
+      - name: Post status
+        if: github.event.inputs.post_ids != ''
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          POST_IDS: ${{ github.event.inputs.post_ids }}
+        run: python video/post_buffer.py --status $POST_IDS
+      - name: Describe API types
+        if: github.event.inputs.describe != ''
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          TYPE_NAMES: ${{ github.event.inputs.describe }}
+        run: python video/post_buffer.py --describe $TYPE_NAMES
+      - name: Draft test (no public post)
+        if: github.event.inputs.draft_test == 'true'
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # このリポジトリの Releases にある動画を 1 本選び、その公開 URL で下書きを作ってすぐ消す
+          NAME=$(gh release view videos --json assets --jq '.assets[0].name')
+          if [ -z "$NAME" ]; then echo "Releases に動画がまだありません（1 本投稿してから試してください）"; exit 0; fi
+          mkdir -p video/out
+          python - <<PY
+          import json
+          info = {"tiktok_caption": "test", "x_post": "test"}
+          json.dump(info, open("video/out/${NAME%.mp4}.json", "w", encoding="utf-8"), ensure_ascii=False)
+          PY
+          URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/videos/${NAME}"
+          curl -sSL -o /dev/null -w "public url check: http=%{http_code} type=%{content_type} bytes=%{size_download}\n" "$URL"
+          python video/post_buffer.py "video/out/${NAME}" --url "$URL" --draft-test

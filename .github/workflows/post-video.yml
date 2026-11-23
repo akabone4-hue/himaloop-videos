@@ -1,0 +1,173 @@
+name: Post Video (YouTube 自動投稿)
+
+# 1 日 1 本、動画を作って YouTube に投稿します。
+# 認証情報（Secrets の YT_CLIENT_ID / YT_CLIENT_SECRET / YT_REFRESH_TOKEN）が未登録のあいだは何もしません。
+# 投稿した mp4 は Releases の「videos」に置かれ、docs/posts/README.md（TikTok・X 用のコピペ一覧）からダウンロードできます。
+on:
+  schedule:
+    # 投稿は 1 日 2 回、7:10 と 23:10（日本時間）。時刻どおりに動かすのは外部のサービス（cron-job.org）からの呼び出しで、
+    # 下の 2 つは「外部の呼び出しが止まったときの予備」。GitHub の予定実行はこのリポジトリでは 5〜9 時間遅れるので、
+    # 予備が動くころには、ふつうはその枠の動画が投稿済みで、何もせず終わる（video/next_post.py の slot を参照）。
+    - cron: "10 23 * * *"     # 08:10（日本時間）。朝の枠の予備
+    - cron: "10 15 * * *"     # 00:10（日本時間）。夜の枠の予備
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "いまの枠（朝か夜）の分を投稿済みでも、もう 1 本投稿する"
+        type: boolean
+        default: false
+      type:
+        description: "種類（空欄なら予約リスト video/post_queue.txt の先頭）"
+        required: false
+        default: ""
+      seed:
+        description: "シード（種類を指定したときだけ使う。空欄なら日付から決める）"
+        required: false
+        default: ""
+      privacy:
+        description: "公開設定"
+        type: choice
+        options: [public, unlisted, private]
+        default: public
+      youtube_url:
+        description: "すでに YouTube に上げてある動画の URL（入れると YouTube への投稿は行わず、一覧ページへの登録だけ行う）"
+        required: false
+        default: ""
+
+concurrency:
+  group: post-video
+  cancel-in-progress: false
+
+permissions:
+  contents: write     # 予約リストと投稿一覧のコミット、Releases への動画ファイルの追加に必要
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240     # 3D の型（marble / faces）は書き出しに 1〜3 時間かかる。ほかの型は数分で終わる
+    env:
+      YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+      YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+      YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check credentials and whether today's video is already posted
+        id: cred
+        env:
+          IN_TYPE: ${{ github.event.inputs.type }}
+          IN_URL: ${{ github.event.inputs.youtube_url }}
+          IN_FORCE: ${{ github.event.inputs.force }}
+        run: |
+          if [ -z "$YT_CLIENT_ID" ] || [ -z "$YT_CLIENT_SECRET" ] || [ -z "$YT_REFRESH_TOKEN" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::YouTube の認証情報が未登録のため、何もせず終了します（video/POSTING.md の手順を参照）"
+          elif [ -z "$IN_TYPE" ] && [ -z "$IN_URL" ] && [ "$IN_FORCE" != "true" ] && python3 video/next_post.py --already-posted; then
+            # 予定実行が遅れて届いた、または外部からの呼び出しと重なった場合。1 日 1 本を守る
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::この枠（朝か夜）の分は投稿済みのため、何もせず終了します"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-python@v5
+        if: steps.cred.outputs.ready == 'true'
+        with:
+          python-version: "3.13"     # Blender のモジュール（bpy 5.3）が 3.13 用のため
+          cache: pip
+          cache-dependency-path: video/requirements.txt
+
+      - name: Install ffmpeg and Python packages
+        if: steps.cred.outputs.ready == 'true'
+        run: |
+          command -v ffmpeg >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+          pip install -r video/requirements.txt
+
+      - name: Pick the next video
+        if: steps.cred.outputs.ready == 'true'
+        id: pick
+        env:
+          IN_TYPE: ${{ github.event.inputs.type }}
+          IN_SEED: ${{ github.event.inputs.seed }}
+        run: |
+          if [ -n "$IN_TYPE" ]; then
+            SEED="${IN_SEED:-$(TZ=Asia/Tokyo date +%Y%m%d)}"
+            echo "type=$IN_TYPE" >> "$GITHUB_OUTPUT"; echo "seed=$SEED" >> "$GITHUB_OUTPUT"; echo "from=manual" >> "$GITHUB_OUTPUT"
+          else
+            read -r T S F <<< "$(python video/next_post.py)"
+            echo "type=$T" >> "$GITHUB_OUTPUT"; echo "seed=$S" >> "$GITHUB_OUTPUT"; echo "from=$F" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Blender (3D types only)
+        if: steps.cred.outputs.ready == 'true' && contains(fromJSON('["marble","faces","chime"]'), steps.pick.outputs.type)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libxrender1 libxi6 libxkbcommon0 libsm6 libxxf86vm1 libxfixes3 libgl1 libegl1
+          pip install -r video/requirements-3d.txt
+
+      - name: Render
+        if: steps.cred.outputs.ready == 'true'
+        run: python video/make.py "${{ steps.pick.outputs.type }}" --seed "${{ steps.pick.outputs.seed }}" --out video/out
+
+      - name: Upload to YouTube
+        if: steps.cred.outputs.ready == 'true' && github.event.inputs.youtube_url == ''
+        run: python video/upload_youtube.py video/out/*.mp4 --privacy "${{ github.event.inputs.privacy || 'public' }}"
+
+      - name: Publish the file and update the post list
+        if: steps.cred.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KNOWN_URL: ${{ github.event.inputs.youtube_url }}
+          KNOWN_PRIVACY: ${{ github.event.inputs.privacy }}
+        run: |
+          FILE=$(ls video/out/*.mp4 | head -1)
+          NAME=$(basename "$FILE")
+          gh release view videos >/dev/null 2>&1 || gh release create videos --title "動画ファイル" \
+            --notes "投稿した動画の置き場です。docs/posts/README.md の一覧から参照されます。"
+          gh release upload videos "$FILE" --clobber
+          ASSET="https://github.com/${GITHUB_REPOSITORY}/releases/download/videos/${NAME}"
+          if [ -n "$KNOWN_URL" ]; then
+            python video/post_log.py "$FILE" --asset-url "$ASSET" --youtube-url "$KNOWN_URL" --privacy "$KNOWN_PRIVACY"
+          else
+            python video/post_log.py "$FILE" --asset-url "$ASSET"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: steps.cred.outputs.ready == 'true'
+        with:
+          name: posted-${{ steps.pick.outputs.type }}-${{ github.run_number }}
+          path: video/out/
+          retention-days: 14
+          compression-level: 0
+
+      - name: Save the queue and the post list
+        if: steps.cred.outputs.ready == 'true'
+        run: |
+          if [ "${{ steps.pick.outputs.from }}" = "queue" ]; then python video/next_post.py --pop; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add video/post_queue.txt video/posts.json docs/posts/
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: record posted video [skip ci]"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push && exit 0
+            echo "push attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
+          exit 1
+
+      # TikTok と X への投稿（Buffer 経由）。YouTube への投稿と記録が済んだあとに行うので、
+      # ここで失敗しても YouTube 側には影響しません。開始日は video/post_config.json で指定。
+      - name: Post to TikTok and X via Buffer
+        if: steps.cred.outputs.ready == 'true' && env.BUFFER_API_KEY != '' && github.event.inputs.youtube_url == ''
+        run: |
+          python video/post_buffer.py --is-enabled || exit 0
+          FILE=$(ls video/out/*.mp4 | head -1)
+          NAME=$(basename "$FILE")
+          # 動画ファイルは、上の「Publish the file」でこのリポジトリの Releases に置いてある。
+          # 公開リポジトリなので、その URL をそのまま Buffer に渡せる（別の置き場は要らない）。
+          # YouTube を先に出し、TikTok と X はその約 10 分後に出す（YouTube を主にするため）。
+          # 待っているあいだも GitHub の実行時間を使う（1 日 10 分）。間隔を変えるときは下の秒数を変える
+          sleep 585
+          python video/post_buffer.py "$FILE" --url "https://github.com/${GITHUB_REPOSITORY}/releases/download/videos/${NAME}" --wait

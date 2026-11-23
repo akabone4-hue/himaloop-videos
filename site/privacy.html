@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy - uploader</title>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.6; color: #1f2328;
+         background: #fff; max-width: 680px; margin: 0 auto; padding: 48px 20px; }
+  h1 { font-size: 28px; margin: 0 0 8px; }
+  h2 { font-size: 18px; margin: 32px 0 8px; }
+  p, li { font-size: 16px; }
+  a { color: #0969da; }
+  .date { color: #59636e; font-size: 14px; }
+  footer { margin-top: 48px; font-size: 14px; color: #59636e; }
+</style>
+</head>
+<body>
+<h1>Privacy policy</h1>
+<p class="date">Last updated: November 15, 2026</p>
+
+<p>This policy covers "uploader", a personal tool that uploads its owner's own videos to its owner's own
+YouTube channel. The tool is used only by its owner. It has no other users and no sign-up.</p>
+
+<h2>Information the tool accesses</h2>
+<p>The tool uses YouTube API Services with a single permission: uploading videos
+(<code>https://www.googleapis.com/auth/youtube.upload</code>). With it, the tool sends a video file, a title,
+a description and tags to the owner's YouTube channel.</p>
+<p>The tool does not read the owner's Google account profile, email, contacts, watch history, comments or
+any other YouTube data. It does not access anyone else's account.</p>
+
+<h2>Information the tool stores</h2>
+<p>To upload without asking for sign-in every day, the tool keeps an OAuth client ID, client secret and refresh
+token. They are stored as encrypted secrets in the owner's private GitHub repository and are used only to
+request upload access from Google. The tool keeps a list of the videos it has uploaded (title, upload date
+and video URL). It stores no other personal data.</p>
+
+<h2>Sharing</h2>
+<p>The tool does not sell, share or transfer any information to third parties. The only data that leaves the
+tool is the video and its text, which are sent to YouTube for publication on the owner's channel.</p>
+
+<h2>Limited use</h2>
+<p>The tool's use of information received from Google APIs follows the
+<a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>,
+including the Limited Use requirements.</p>
+
+<h2>YouTube and Google terms</h2>
+<p>The tool uses YouTube API Services. By using it, the owner agrees to be bound by the
+<a href="https://www.youtube.com/t/terms">YouTube Terms of Service</a>. Google's handling of data is described
+in the <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.</p>
+
+<h2>Revoking access and deleting data</h2>
+<p>Access can be revoked at any time on the
+<a href="https://myaccount.google.com/permissions">Google account permissions page</a>. Deleting the stored
+secrets from the GitHub repository removes everything the tool holds. Uploaded videos can be deleted in
+YouTube Studio.</p>
+
+<h2>Changes</h2>
+<p>If this policy changes, the new version will be posted on this page with a new date.</p>
+
+<h2>Contact</h2>
+<p>Questions about this policy can be sent through the
+<a href="https://github.com/akabone4-hue/uploader-site/issues">issue tracker</a>.</p>
+
+<footer><a href="index.html">Back to home</a></footer>
+</body>
+</html>

@@ -1,0 +1,60 @@
+name: Video Stats (再生数などの集計)
+
+# 1 日 1 回、投稿した動画の再生数・平均視聴率などを集めて docs/stats/README.md に書き出します。
+# 認証情報が未登録のあいだは何もしません。
+on:
+  schedule:
+    - cron: "43 23 * * *"     # 毎日 08:43（日本時間）
+  workflow_dispatch: {}
+
+concurrency:
+  group: video-stats
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+      YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+      YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+    steps:
+      - name: Check credentials
+        id: cred
+        run: |
+          if [ -n "$YT_CLIENT_ID" ] && [ -n "$YT_CLIENT_SECRET" ] && [ -n "$YT_REFRESH_TOKEN" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::YouTube の認証情報が未登録のため、何もせず終了します"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.cred.outputs.ready == 'true'
+      - uses: actions/setup-python@v5
+        if: steps.cred.outputs.ready == 'true'
+        with:
+          python-version: "3.12"
+      - name: Collect
+        if: steps.cred.outputs.ready == 'true'
+        run: |
+          pip install -q requests
+          python video/stats.py
+      - name: Save
+        if: steps.cred.outputs.ready == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/stats/ docs/posts/ video/posts.json
+          [ -f video/stats.json ] && git add video/stats.json
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: update video stats [skip ci]"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push && exit 0
+            sleep 5
+          done
+          exit 1
