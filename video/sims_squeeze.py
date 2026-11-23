@@ -357,24 +357,31 @@ SURVIVORS = [("RED", (255, 77, 90)), ("BLUE", (61, 139, 255)), ("GREEN", (61, 22
              ("PURPLE", (178, 102, 255)), ("ORANGE", (255, 140, 50))]
 
 
-def _run_survive(v, rng, mech, lives=3, br=26.0, bottom=CY + 640, caption="Squeezed = -1 life"):
+# survive2: 大きさとライフの違う 3 種類（半径, ライフ, 呼び名）。大きいほど挟まれやすいので、そのぶんライフが多い。
+# ライフの数は試算で決めた: 64 回で 小 21 勝・中 20 勝・大 23 勝（変えたら試算し直すこと）。
+SIZE_CLASSES = [(16.0, 3, "SMALL"), (26.0, 4, "MEDIUM"), (38.0, 15, "BIG")]
+
+
+def _run_survive(v, rng, mech, lives=3, br=26.0, bottom=CY + 640, caption="Squeezed = -1 life", classes=None):
     """6 色のボールが同じ仕掛けの中を逃げ回る。はさまれて潰されるたびにライフが 1 減り、0 になると消える。
     最後まで残った 1 個が勝ち。潰された判定は増える型（_run）と同じ。"""
     sp = _space(gravity=0.0)
     sp.iterations = 12
-    m = mech(sp, rng, br)
+    # 仕掛けのすき間は、いちばん小さいボールに合わせる（どの大きさも挟まれる）
+    m = mech(sp, rng, min(c_[0] for c_ in classes) if classes else br)
     names = SURVIVORS[:]
     rng.shuffle(names)
     lo, hi = m.get("speed", (300.0, 600.0))
     balls = []                                 # [body, shape, 番号, ライフ, 次に潰されてよい時刻]
+    kind = [classes[i % len(classes)] if classes else (br, lives, "") for i in range(len(names))]
     for i in range(len(names)):
         a = i * math.tau / len(names) + rng.uniform(-0.2, 0.2)
-        d = rng.uniform(40, 120)
+        d = rng.uniform(70, 130) if classes else rng.uniform(40, 120)
         va = rng.uniform(0, math.tau)
-        b, c = _ball(sp, (CX + math.cos(a) * d, CY + math.sin(a) * d), br,
+        b, c = _ball(sp, (CX + math.cos(a) * d, CY + math.sin(a) * d), kind[i][0],
                      vel=(math.cos(va) * 420, math.sin(va) * 420), elasticity=1.0, friction=0.0)
-        balls.append([b, c, i, lives, 1.5])
-    hp = [lives] * len(names)
+        balls.append([b, c, i, kind[i][1], 1.5])
+    hp = [k[1] for k in kind]
     out_order = []                             # 脱落した順
     pops = []                                  # 潰された瞬間の輪 [x, y, 色, 経過, 脱落か]
     n_steps, dt = _steps(v)
@@ -459,21 +466,23 @@ def _run_survive(v, rng, mech, lives=3, br=26.0, bottom=CY + 640, caption="Squee
             for body, _c, idx, life, cool in balls:
                 x, y = body.position.x, body.position.y
                 col = names[idx][1]
+                r_ = kind[idx][0]
                 blink = t < cool and int(t * 14) % 2 == 0      # 潰された直後は点滅（この間はもう一度潰されない）
-                v.circle((255, 255, 255), (x, y), br + 3)
-                v.circle(mix(col, (255, 255, 255), 0.55) if blink else col, (x, y), br)
-                v.text(str(life), 40, (x, y + 1), outline=3)
+                v.circle((255, 255, 255), (x, y), r_ + 3)
+                v.circle(mix(col, (255, 255, 255), 0.55) if blink else col, (x, y), r_)
+                v.text(str(life), 40 if r_ >= 24 else 30, (x, y + 1), outline=3)
             m["draw"](v, t)
             v.text(caption, 92, (CX, 170))
             # 上の一覧: 色ごとの残りライフ（脱落した色は暗くなる）
             for i, (name, col) in enumerate(names):
                 px = CX - (len(names) - 1) * 80 + i * 160
                 alive = hp[i] > 0
-                v.circle(col if alive else mix((0, 0, 0), col, 0.25), (px, 272), 24)
-                for k in range(lives):
+                v.circle(col if alive else mix((0, 0, 0), col, 0.25), (px, 272), 24 if not classes else 10 + kind[i][0] * 0.5)
+                for k in range(kind[i][1]):
                     c2 = col if k < hp[i] else (46, 48, 58)
-                    wd = 110 / lives
-                    pygame.draw.rect(v.surf, c2, (int(px - 55 + k * wd), 308, int(wd - 5), 9), border_radius=3)
+                    wd = 110 / kind[i][1]
+                    pygame.draw.rect(v.surf, c2, (int(px - 55 + k * wd), 308, max(3, int(wd - (5 if wd > 12 else 2))), 9),
+                                     border_radius=3)
             if done_at is not None and balls:
                 w = balls[0][2]
                 v.text(f"{names[w][0]} WINS", 150, (CX, bottom - 30), color=names[w][1], outline=7)
@@ -485,11 +494,19 @@ def _run_survive(v, rng, mech, lives=3, br=26.0, bottom=CY + 640, caption="Squee
         if v.t > 80:
             break
     winner = names[balls[0][2]][0] if balls else "nobody"
+    if classes and balls:
+        cls = kind[balls[0][2]][2]
+        return {"result": f"{winner} ({cls}) wins, {len(out_order)} out", "winner": cls}
     return {"result": f"{winner} wins, {len(out_order)} out", "winner": winner}
 
 
 def run_survive(v, rng):
     return _run_survive(v, rng, _mech_cam, lives=5)
+
+
+def run_survive2(v, rng):
+    """生き残りの別バージョン: 小（ライフ少）・中・大（ライフ多）が 2 個ずつ。"""
+    return _run_survive(v, rng, _mech_cam, classes=SIZE_CLASSES, caption="Small or big - who survives?")
 
 
 def run_smash(v, rng):

@@ -87,6 +87,10 @@ SIMS = {
         "run": sims_fill.run_blackhole, "length": (24, 42), "ja": "育っていくブラックホールから逃げる生き残り戦（8 色）",
         "titles": ["吸い込まれたら脱落。最後に残るのは？", "Don't fall in - last ball wins"],
     },
+    "survive2": {
+        "run": sims_squeeze.run_survive2, "length": (24, 42), "ja": "大きさとライフの違う生き残り戦（小 3・中 4・大 15）",
+        "titles": ["小さくて弱いか、大きくて強いか。生き残るのは？", "Small with 3 lives or big with 15 - who survives?"],
+    },
     "gear2": {
         "run": sims_pack.run_gear2, "length": (22, 40), "ja": "歯車の別バージョン（アーム 4 本。挟まれて潰されると 2 個に増える）",
         "titles": ["4本のアームに潰されるたび2倍", "Squeezed = x2 (4 arms)"],
@@ -412,6 +416,16 @@ COPY.update({
         "rule_ja": "2本のアームが逆向きに回っています。すれ違うアームに挟まれて潰されたボールは2個に増え、その瞬間の色になります。",
         "ask_en": "Which color took over the most?", "ask_ja": "一番広がったのは何色？",
         "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "multiply", "ボール 増える"],
+    },
+    "survive2": {
+        "en": ["Small with 3 lives or big with 15 - who survives?", "Small, medium or big?", "3 lives vs 4 lives vs 15 lives"],
+        "ja": ["小さくて弱いか、大きくて強いか。生き残るのは？", "小・中・大、どれが残る？", "ライフ3・4・15の生き残り戦"],
+        "rule_en": "A ball squeezed between a roller and the wall loses 1 life. Small balls have 3 lives, medium 4, big 15 - "
+                   "but the bigger the ball, the easier it is to catch. The last ball left wins.",
+        "rule_ja": "ローラーと壁に挟まれるたびにライフが1減ります。小はライフ3、中は4、大は15。"
+                   "ただし大きいほど挟まれやすい。最後に残った1個が勝ち。",
+        "ask_en": "Which size did you pick?", "ask_ja": "どの大きさを選んだ？",
+        "hash": ["#ballrace", "#survival"], "keys": ["ball race", "survival", "last one standing", "生き残り"],
     },
     "gear2": {
         "en": ["Squeezed = x2 (4 arms)", "1 ball, 4 arms, 2,000 balls", "Twice the arms, twice the squeezing"],
