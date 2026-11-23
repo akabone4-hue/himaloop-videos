@@ -19,11 +19,16 @@
 | `chime` | 3D。色つきの鉄琴の上をボールが弧を描いて跳ね、着地するたびに 1 音鳴る（次の音までが長いほど高く跳ぶ）。経路は `sims_course.arc_layout` が決め、絵は `blender_chime.py` が描く |
 | `towers2` | towers の別バージョン。階ごとに 2 倍／毎秒決まった数ずつ増える／最初から大勢で増えない、の 3 つ |
 | `cannons` | towers の兄弟。3 本のレーンで砲台が上の壁を撃つ。撃つ速さが倍々になる 1 門／一定時間ごとに 1 門ずつ増える／最初から何門もある、の 3 つ |
-| `colorwar2` | 陣取り合戦の別バージョン。巨大で速い 1 個／速い 2 個／遅い 8 個／ふつうの 4 個 |
 | `hexarms` | arms の別バージョン。六角形の角 3 つでアームが回る |
 | `beams` | 円の中で 2 本の光線が逆向きに回る。緑に触れたボールは 2 つに割れ、赤に触れたボールは消える。300 個で弾ける |
 | `survive` | 6 色のボールがローラーから逃げる生き残り戦。潰されるたびにライフが 1 減り、最後に残った 1 個が勝ち |
 | `smash` | survive のピストン版 |
+| `survive2` | survive の別バージョン。小（ライフ 3）・中（ライフ 4）・大（ライフ 15）が 2 個ずつ。大きいほど挟まれやすい。ライフは試算で勝率をそろえた値 |
+| `gear2` | gear の別バージョン。アームが 4 本（2 本ずつ逆向き）で、2,000 個まで増える |
+| `bricks2` | bricks の別バージョン。6 ダメージ 1 個／3 ダメージ 2 個／1 ダメージ 6 個、の 3 レーン |
+| `bomb` | 爆弾まわし。爆弾は触れた相手に移り、導火線が尽きたとき持っていた色が脱落。爆弾は一番近いボールへ飛ぶ。最後の 1 個が勝ち |
+| `plinko` | 600 個のボールを釘の板に落とす。13 個の仕切りに山ができ、色の波が 1 列ずつ数えたあと、底が開いて流れ落ちる |
+| `merge` | 左右に動く口から数字の付いたボールが落ちる。同じ数字どうしが触れるとまとまって倍になり、1024 ができたら全部弾ける |
 | `fillwave` | 形（ハート・六角形・円・ひし形）の中でボールが増え続け、いっぱいになると色の波が走って虹色に並び、最後に弾ける |
 | `blackhole` | 8 色のボールが、育っていくブラックホールから逃げる。触れたら脱落。最後に残った 1 個が勝ち |
 | `rps` | グー・チョキ・パーの駒が、勝てる相手を追い、負ける相手から逃げる。触れた相手を仲間に変え、1 種類になったら終わり |
@@ -68,13 +73,14 @@ python video/make.py rings --preview       # 低画質で手早く確認
 | `sims_ring.py` | grow / rings / multiply |
 | `sims_arena.py` | colorwar / battle |
 | `sims_course.py` | music（と、以前の 2D 版 marble） |
-| `sims_squeeze.py` | hammer / cam / hexarms / beams / survive / smash（「潰されると…」の土台。仕掛けを 1 つ書けば新しい型になる） |
+| `sims_squeeze.py` | hammer / cam / hexarms / beams / survive / survive2 / smash（「潰されると…」の土台。仕掛けを 1 つ書けば新しい型になる） |
 | `sims_fill.py` | fillwave / blackhole |
 | `sims_swarm.py` | rps |
+| `sims_party.py` | bomb / plinko / merge |
 | `sims_tower.py` | towers / towers2 / cannons |
 | `sims_3d.py` | marble / faces / chime（3D。絵は `blender_marble.py` / `blender_cloth.py` / `blender_chime.py` が Blender で描き、ここで文字と音を重ねる） |
-| `sims_more.py` | weapon / bricks |
-| `sims_pack.py` | fill / gear / arms / glass（ボール同士が押し合う型。物理エンジン pymunk を使用） |
+| `sims_more.py` | weapon / bricks / bricks2 |
+| `sims_pack.py` | fill / gear / gear2 / arms / glass（ボール同士が押し合う型。物理エンジン pymunk を使用） |
 | `sims_board.py` | walls（盤上ゲーム。先に全部の手を決めてから再生する） |
 | `sims_light.py` | rays（光線の反射。書き出しに他の型の 2〜3 倍の時間がかかる） |
 | `upload_youtube.py` | YouTube へのアップロード（認証情報は GitHub の Secrets から読む） |

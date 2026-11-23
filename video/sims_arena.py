@@ -34,7 +34,9 @@ TRAITS2 = [
 
 
 def run_colorwar2(v, rng):
-    """陣取り合戦の別バージョン: 大きい 1 個／速い 2 個／遅い 8 個／ふつう 3 個。"""
+    """陣取り合戦の別バージョン: 大きい 1 個／速い 2 個／遅い 8 個／ふつう 4 個。
+    registry からは外してある: だれも増えないので 36 秒間ほとんど勢力が動かず、見ていて退屈だった。
+    使うなら、増える条件（colorwar の TRAITS のような）を足してから。"""
     return run_colorwar(v, rng, traits=TRAITS2)
 
 
