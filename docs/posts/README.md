@@ -1,17 +1,37 @@
-# 投稿一覧（TikTok・X 用）
+# 投稿一覧
 
-最終更新: 2026-11-23 05:42 JST ／ 新しい動画が上に並びます
+最終更新: 2026-11-23 23:12 JST ／ 新しい動画が上に並びます
 
-## 使い方
+YouTube・TikTok・X へは自動で投稿されます（TikTok と X は、YouTube の約 10 分後に Buffer 経由）。
+下のリンクと文面は、手で投稿し直したいとき用です。
+
+## 手で投稿するとき
 
 1. 「動画をダウンロード」を押して mp4 を保存する
 2. 「TikTok の投稿画面を開く」を押し、保存した mp4 を選ぶ
 3. 下の文面の右上にあるコピーボタンを押し、説明欄に貼って投稿する
 4. X も同じ手順で、X 用の文面を貼る
 
-YouTube には自動で投稿済みです。TikTok と X は自動化できないため、ここから手で投稿します。
+---
 
-1 週間分をまとめて予約投稿したい場合は、[今週の予約投稿用ページ](week.md) を使ってください。
+## 11/23（月） Can the ball escape 10 rings?
+
+- 種類: 回転するリングのすき間から脱出 ／ 長さ: 28.2秒
+- **[動画をダウンロード](https://github.com/akabone4-hue/himaloop-videos/releases/download/videos/rings_21.mp4)**（rings_21.mp4）
+- YouTube: https://www.youtube.com/shorts/ESD_-rhrV90
+
+**TikTok** ／ [TikTok の投稿画面を開く](https://www.tiktok.com/tiktokstudio/upload)
+
+````text
+Can the ball escape 10 rings?
+#ballescape #bouncingball #satisfying #simulation #fyp
+````
+
+**X** ／ [X の投稿画面を開く](https://x.com/compose/post)
+
+````text
+Can the ball escape 10 rings?
+````
 
 ---
 
