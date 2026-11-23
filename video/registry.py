@@ -75,6 +75,10 @@ SIMS = {
         "run": sims_swarm.run_rps, "length": (20, 41), "ja": "グー・チョキ・パーの駒が追いかけ合い、触れた相手を仲間に変える",
         "titles": ["グー・チョキ・パー、最後に残るのは？", "Rock Paper Scissors - which one takes over?"],
     },
+    "rps2": {
+        "run": sims_swarm.run_rps2, "length": (20, 41), "ja": "rps の別バージョン。炎・水・葉の 3 すくみ",
+        "titles": ["炎・水・葉、最後に残るのは？", "Fire, Water, Leaf - which one takes over?"],
+    },
     "survive": {
         "run": sims_squeeze.run_survive, "length": (17, 30), "ja": "ローラーに潰されるたびにライフが減る生き残り戦（6 色）",
         "titles": ["潰されたらライフ-1。最後に残るのは？", "Squeezed = -1 life. Last ball wins"],
@@ -298,6 +302,17 @@ COPY = {
         "rule_ja": "どの駒も、勝てる相手を追いかけ、負ける相手から逃げます。触れられた側は相手の仲間に変わり、1種類だけになったら終わり。",
         "ask_en": "Which one did you pick?", "ask_ja": "どれを選んだ？",
         "hash": ["#simulation", "#rockpaperscissors"], "keys": ["rock paper scissors", "simulation", "battle", "じゃんけん"],
+    },
+    "rps2": {
+        "en": ["Fire, Water, Leaf - which one takes over?", "Fire burns leaf, leaf drinks water, water stops fire",
+               "34 flames, 34 drops, 34 leaves. One survives"],
+        "ja": ["炎・水・葉、最後に残るのは？", "炎は葉を燃やし、葉は水を吸い、水は炎を消す", "炎34・水34・葉34、残るのは1種類"],
+        "rule_en": "Fire burns leaf, leaf drinks water, water puts out fire. Every piece chases what it beats and runs from "
+                   "what beats it. A touch converts the loser. It ends when only one kind is left.",
+        "rule_ja": "炎は葉を燃やし、葉は水を吸い、水は炎を消します。どの駒も、勝てる相手を追いかけ、負ける相手から逃げます。"
+                   "触れられた側は相手の仲間に変わり、1種類だけになったら終わり。",
+        "ask_en": "Which one did you pick?", "ask_ja": "どれを選んだ？",
+        "hash": ["#simulation", "#elements"], "keys": ["fire water leaf", "simulation", "battle", "3すくみ"],
     },
     "survive": {
         "en": ["Squeezed = -1 life. Last ball wins", "6 balls, 5 lives each, 3 rollers", "Pick a color before the rollers speed up"],

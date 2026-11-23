@@ -8,6 +8,7 @@ hammer 2
 music 21
 cam 6
 grow 21
+gear2 2
 cannons 3
 merge 2
 bomb 1
@@ -17,3 +18,4 @@ bricks2 3
 rps 5
 plinko 1
 fillwave 2
+beams 7

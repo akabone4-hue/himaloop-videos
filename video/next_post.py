@@ -21,7 +21,7 @@ QUEUE = os.path.join(HERE, "post_queue.txt")
 ROTATION = ["towers", "colorwar", "walls", "gear", "weapon", "glass", "bricks", "battle", "rings", "arms",
             "multiply", "hammer", "music", "rays", "cam", "grow",
             # 2026-11-23 に「合格」と言われた型
-            "cannons", "merge", "bomb", "towers2", "blackhole", "bricks2", "rps"]
+            "cannons", "merge", "bomb", "towers2", "blackhole", "bricks2", "rps", "gear2", "beams"]
 
 
 def read_queue():

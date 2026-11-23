@@ -94,19 +94,24 @@ def main():
     sc = bpy.context.scene
     sc.render.fps = fps
 
-    # ---- 鍵盤（音の高さで色と奥行きが変わる）
+    # ---- 鍵盤。見た目（色と奥行き）は音の高さだけで決める: 同じ音の鍵盤は必ず同じ色・同じ長さ、
+    # 違う音の鍵盤は必ず違う見た目になる（「同じ鍵盤なのに音が違う」と見えないように）。
+    # 低い音ほど長く、色は低い音の赤から高い音の紫へ順に変わる（本物の鉄琴と同じ並び）。
+    # 幅はどの鍵盤も同じ（いちばん間隔の狭い所に合わせる）。
     lo = min(p[5] for p in plats)
     hi = max(p[5] for p in plats)
+    width = max(34.0, min(60.0, min(p[4] for p in plats)))
     bars = []
     mats = {}
-    for x, y, ang, t, length, midi in plats:
+    for x, y, ang, t, _length, midi in plats:
+        length = width
         X, Z = to3d(x, y)
-        key = midi % 12
-        if key not in mats:
-            col = colorsys.hsv_to_rgb(key / 12.0, 0.85, 1.0)
-            mats[key] = linear(col)
+        key = midi
         u = (midi - lo) / max(1, hi - lo)
-        depth = (1.5 - 0.4 * u) if many else (1.6 - 0.7 * u)    # 低い音ほど奥行きが長い（本物の鉄琴と同じ）
+        if key not in mats:
+            col = colorsys.hsv_to_rgb(0.78 * u, 0.85, 1.0)
+            mats[key] = linear(col)
+        depth = 2.0 - 1.0 * u                       # 低い音ほど長い（本物の鉄琴と同じ）
         bpy.ops.mesh.primitive_cube_add(size=1.0, location=(X, 0.0, Z), rotation=(0.0, -ang, 0.0))
         ob = bpy.context.object
         ob.scale = (length * SCALE, depth, 0.16)

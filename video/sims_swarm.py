@@ -28,7 +28,39 @@ def _piece(v, kind, pos, r):
         pygame.draw.line(v.surf, col, (x - d, y + d), (x + d, y - d), 7)
 
 
-def run_rps(v, rng):
+# rps2: 記号の代わりに、炎・水・葉。種類 k が (k + 2) % 3 に勝つのは同じ:
+# 炎(0) は葉(2) を燃やし、水(1) は炎(0) を消し、葉(2) は水(1) を吸う
+ELEMENTS = [("FIRE", (255, 120, 40)), ("WATER", (70, 160, 255)), ("LEAF", (90, 220, 100))]
+
+
+def _element(v, kind, pos, r):
+    """炎・水・葉の小さな絵（半径 r の円に収まる大きさ）。"""
+    x, y = pos
+    col = ELEMENTS[kind][1]
+    if kind == 0:                               # 炎: 上がとがった形に、黄色い芯
+        pts = [(x, y - r * 1.25), (x + r * 0.55, y - r * 0.25), (x + r * 0.85, y + r * 0.35), (x + r * 0.5, y + r * 0.95),
+               (x - r * 0.5, y + r * 0.95), (x - r * 0.85, y + r * 0.35), (x - r * 0.4, y - r * 0.15), (x - r * 0.35, y - r * 0.75)]
+        pygame.draw.polygon(v.surf, col, pts)
+        v.circle((255, 225, 110), (x, y + r * 0.4), r * 0.42)
+    elif kind == 1:                             # 水: しずく（丸の上に三角）と、白い光
+        v.circle(col, (x, y + r * 0.25), r * 0.8)
+        pygame.draw.polygon(v.surf, col, [(x, y - r * 1.2), (x + r * 0.68, y - r * 0.12), (x - r * 0.68, y - r * 0.12)])
+        v.circle((225, 240, 255), (x - r * 0.28, y + r * 0.1), r * 0.2)
+    else:                                       # 葉: 斜めの木の葉の形に、まん中の筋
+        pts = [(x - r * 0.95, y + r * 0.95), (x - r * 0.75, y - r * 0.15), (x + r * 0.05, y - r * 0.85), (x + r * 1.0, y - r * 1.0),
+               (x + r * 0.85, y - r * 0.05), (x + r * 0.15, y + r * 0.75)]
+        pygame.draw.polygon(v.surf, col, pts)
+        pygame.draw.line(v.surf, (30, 110, 50), (x - r * 0.8, y + r * 0.8), (x + r * 0.7, y - r * 0.7), 3)
+
+
+def run_rps2(v, rng):
+    """rps の別バージョン: 炎・水・葉の 3 すくみ。動きは rps と同じ。"""
+    return run_rps(v, rng, kinds=ELEMENTS, piece=_element, title="Fire  Water  Leaf")
+
+
+def run_rps(v, rng, kinds=None, piece=None, title="Rock  Paper  Scissors"):
+    kinds = kinds or KINDS
+    piece = piece or _piece
     side = 940.0
     ox, oy = CX - side / 2, CY - side / 2 + 30
     per = 34
@@ -113,31 +145,31 @@ def run_rps(v, rng):
             pygame.draw.rect(v.surf, (12, 16, 28), (int(ox - 8), int(oy - 8), int(side + 16), int(side + 16)), border_radius=18)
             pygame.draw.rect(v.surf, (235, 235, 240), (int(ox - 8), int(oy - 8), int(side + 16), int(side + 16)), 4, border_radius=18)
             for x, y, k, age in flashes:
-                v.circle(mix(KINDS[k][1], (6, 8, 14), age / 0.3), (x, y), r + 60 * age, width=3)
+                v.circle(mix(kinds[k][1], (6, 8, 14), age / 0.3), (x, y), r + 60 * age, width=3)
             for i in range(n):
-                _piece(v, int(kind[i]), P[i], r)
-            v.text("Rock  Paper  Scissors", 90, (CX, 150))
+                piece(v, int(kind[i]), P[i], r)
+            v.text(title, 90, (CX, 150))
             # ルールの図: 丸は ばつ に勝ち、ばつ は 四角 に勝ち、四角 は 丸 に勝つ
             y0 = 236
             for i, (a_, b_) in enumerate(((0, 2), (2, 1), (1, 0))):
                 x0 = CX - 330 + i * 330
-                _piece(v, a_, (x0 - 62, y0), 17)
+                piece(v, a_, (x0 - 62, y0), 17)
                 v.text("beats", 38, (x0, y0), color=(190, 195, 210), outline=2)
-                _piece(v, b_, (x0 + 62, y0), 17)
+                piece(v, b_, (x0 + 62, y0), 17)
             # 勢力バー
             x = ox
             for k in range(3):
                 wdt = side * counts[k] / n
-                pygame.draw.rect(v.surf, KINDS[k][1], (int(x), 292, int(wdt) + 1, 40))
+                pygame.draw.rect(v.surf, kinds[k][1], (int(x), 292, int(wdt) + 1, 40))
                 if wdt > 90:
                     v.text(str(counts[k]), 38, (x + wdt / 2, 313), color=(10, 10, 16), outline=0)
                 x += wdt
             pygame.draw.rect(v.surf, (235, 235, 240), (int(ox - 3), 289, int(side + 6), 46), 3)
             if done_at is not None:
-                v.text(f"{KINDS[winner][0]} WINS", 140, (CX, oy + side + 110), color=KINDS[winner][1], outline=7)
+                v.text(f"{kinds[winner][0]} WINS", 140, (CX, oy + side + 110), color=kinds[winner][1], outline=7)
         v.end(glow=0.22)
         if done_at is not None and v.t - done_at > 2.4:
             break
         if v.t > 80:
             break
-    return {"result": f"{KINDS[winner][0]} wins ({counts[winner]} of {n})", "winner": KINDS[winner][0]}
+    return {"result": f"{kinds[winner][0]} wins ({counts[winner]} of {n})", "winner": kinds[winner][0]}

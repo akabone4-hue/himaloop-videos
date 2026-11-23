@@ -1,43 +1,39 @@
 {
+ "arms 202612041": [
+  25.73,
+  "seed 202612041: 1 -> 320 balls"
+ ],
  "arms 4": [
   25.42,
   "seed 4: 1 -> 320 balls"
+ ],
+ "battle 202612031": [
+  25.02,
+  "seed 202612032: YELLOW wins"
+ ],
+ "beams 7": [
+  24.57,
+  "seed 7: 1 -> 300 balls"
  ],
  "blackhole 2": [
   24.53,
   "seed 2: YELLOW wins"
  ],
- "blackhole 202612041": [
-  25.48,
-  "seed 202612042: YELLOW wins"
- ],
  "bomb 1": [
   29.6,
   "seed 1: ORANGE wins"
  ],
- "bomb 202612031": [
-  30.98,
-  "seed 202612031: CYAN wins"
- ],
- "bricks2 202612050": [
-  30.92,
-  "seed 202612050: PURPLE (6 balls, 1 damage) wins"
+ "bricks 202612030": [
+  31.22,
+  "seed 202612030: ORANGE wins"
  ],
  "bricks2 3": [
   24.03,
   "seed 3: ORANGE (2 balls, 3 damage) wins"
  ],
- "cam 202612011": [
-  23.43,
-  "seed 202612013: 1 -> 320 balls"
- ],
  "cam 6": [
   20.85,
   "seed 6: 1 -> 320 balls"
- ],
- "cannons 202612021": [
-  40.18,
-  "seed 202612021: LIME (8 cannons) wins at 36.1s; wall 1200, 4 shots/s per cannon"
  ],
  "cannons 3": [
   34.42,
@@ -47,9 +43,13 @@
   26.58,
   "seed 2: heart: 1 -> 706 balls, then the wave"
  ],
- "grow 202612020": [
-  27.42,
-  "seed 202612021: 60 bounces"
+ "gear2 2": [
+  25.32,
+  "seed 2: 1 -> 2022 balls (2021 squeezes)"
+ ],
+ "glass 202612021": [
+  37.1,
+  "seed 202612021: glass broke at 34.3s after 206 hits, 495 shots"
  ],
  "grow 21": [
   29.65,
@@ -63,9 +63,9 @@
   34.22,
   "seed 2: 334 balls dropped, reached 1024"
  ],
- "merge 202612030": [
-  31.22,
-  "seed 202612031: 299 balls dropped, reached 1024"
+ "multiply 202612050": [
+  26.48,
+  "seed 202612050: 1 -> 220 balls, then every ball bursts into 3"
  ],
  "multiply 21": [
   35.95,
@@ -79,6 +79,10 @@
   35.38,
   "seed 1: counts [0, 4, 8, 47, 71, 99, 121, 107, 88, 35, 13, 6, 1]"
  ],
+ "rings 202612040": [
+  37.88,
+  "seed 202612040: escaped in 35.9s"
+ ],
  "rings 21": [
   28.2,
   "seed 21: escaped in 26.2s"
@@ -90,9 +94,5 @@
  "towers2 1": [
   38.63,
   "seed 1: LIME (80 +80 per second) wins at 35.5s; 1,500 never grows, 15 x2 per floor, 80 +"
- ],
- "towers2 202612040": [
-  38.38,
-  "seed 202612040: PINK (15 x2 per floor) wins at 34.4s; 80 +80 per second, 15 x2 per floor, 1,500 "
  ]
 }
