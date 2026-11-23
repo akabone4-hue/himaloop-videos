@@ -1,6 +1,6 @@
 # 動画の数字
 
-最終更新: 2026-11-23 13:32 JST ／ 1 日 1 回、自動で更新されます
+最終更新: 2026-11-23 13:54 JST ／ 1 日 1 回、自動で更新されます
 
 ## 見方
 
@@ -12,8 +12,8 @@
 
 | 投稿日時 | 種類 | タイトル | YouTube 再生数 | 高評価 | コメント | 平均視聴率 | 平均視聴時間 | 共有 | 登録者 | TikTok 再生数 | X 表示回数 |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 11/23 5:42 | glass | [1 cannon vs a wall of glass](https://www.youtube.com/shorts/e2P10hreeGU) | 820 | 2 | 0 | — | — | — | — | — | — |
-| 11/22 5:29 | battle | [Last ball standing wins](https://www.youtube.com/shorts/iYbTmwm3VQM) | 1,391 | 11 | 0 | — | — | — | — | — | — |
+| 11/23 5:42 | glass | [1 cannon vs a wall of glass](https://www.youtube.com/shorts/e2P10hreeGU) | 847 | 2 | 0 | — | — | — | — | — | — |
+| 11/22 5:29 | battle | [Last ball standing wins](https://www.youtube.com/shorts/iYbTmwm3VQM) | 1,390 | 11 | 0 | — | — | — | — | — | — |
 | 11/21 6:48 | gear | [Every squeeze makes it worse](https://www.youtube.com/shorts/sz0c4TY6K5A) | 22,092 | 115 | 9 | 85% | 24.0秒 | 3 | +1 | — | — |
 | 11/20 7:08 | walls | [First to the crown wins](https://www.youtube.com/shorts/NMIfHBVv8os) | 1,229 | 8 | 1 | 81% | 29.0秒 | 0 | +1 | — | — |
 | 11/19 6:51 | colorwar | [More balls or faster growth - which one wins?](https://www.youtube.com/shorts/avHjh_ck6Ok) | 1,492 | 9 | 3 | 66% | 25.0秒 | 0 | +0 | — | — |
@@ -29,10 +29,10 @@
 | towers | 条件の違う 3 つの塔。10 階を最初に壊すのは？ | 1 | 1,685 | 81% |
 | colorwar | 4 色の陣取り合戦 | 1 | 1,492 | 66% |
 | weapon | 武器を持ったボールの 1 対 1（当てるたびに強くなる） | 1 | 1,488 | 71% |
-| battle | HP 制のボールバトル（最後の 1 個が勝ち） | 1 | 1,391 | — |
+| battle | HP 制のボールバトル（最後の 1 個が勝ち） | 1 | 1,390 | — |
 | bricks | ブロックを掘り進むレース（4 色） | 1 | 1,293 | 57% |
 | walls | 王冠を目指して壁で邪魔し合う盤上ゲーム | 1 | 1,229 | 81% |
-| glass | 右の砲台がガラスを撃つ。当たったボールは消えてガラスが欠け、外れてくぼみに落ちたボールは倍率ぶん増えて撃ち直される | 1 | 820 | — |
+| glass | 右の砲台がガラスを撃つ。当たったボールは消えてガラスが欠け、外れてくぼみに落ちたボールは倍率ぶん増えて撃ち直される | 1 | 847 | — |
 
 本数が少ないうちは、1 本の当たり外れで平均が大きく動きます。各種類 3 本以上たまってから比べてください。
 
@@ -43,7 +43,7 @@
 
 | 時間帯 | 本数 | 1 本あたりの再生数 | まん中の値 | 平均視聴率 |
 |---|---:|---:|---:|---:|
-| 朝（7:10 ごろ） | 8 | 3,936 | 1,440 | 74% |
+| 朝（7:10 ごろ） | 8 | 3,940 | 1,439 | 74% |
 | 夜（23:10 ごろ） | 0 | — | — | — |
 
 ## どの国から見られているか（YouTube）
