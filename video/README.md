@@ -86,6 +86,9 @@ python video/make.py rings --preview       # 低画質で手早く確認
 | `sims_pack.py` | fill / gear / gear2 / arms / glass（ボール同士が押し合う型。物理エンジン pymunk を使用） |
 | `sims_board.py` | walls（盤上ゲーム。先に全部の手を決めてから再生する） |
 | `sims_light.py` | rays（光線の反射。書き出しに他の型の 2〜3 倍の時間がかかる） |
+| `tools/balance.py` | 絵を描かずに何十回も回して、長さと勝ち方のかたよりを調べる |
+| `tools/review.py` | できあがった動画を機械で点検する（長さ・音量・無音・停滞・端）。コマの一覧画像も作る |
+| `tools/smoke.py` | 直したあとの確認。全部の型が落ちないか、順番待ちの動画の中身が変わっていないか（`tools/golden.json` と比べる） |
 | `upload_youtube.py` | YouTube へのアップロード（認証情報は GitHub の Secrets から読む） |
 | `next_post.py` / `post_queue.txt` | 次に投稿する動画を決める。予約リストは上から順に 1 日 1 本 |
 | `post_log.py` / `posts.json` | 投稿の記録と、TikTok・X 用のコピペ一覧ページ（`docs/posts/README.md`）の生成 |

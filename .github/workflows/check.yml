@@ -1,0 +1,37 @@
+name: Check (コードを直したあとの確認)
+
+# video/ のコードが変わるたびに、全部の型を 1 回ずつ絵なしで回して、落ちないかを確かめる。
+# 夜の自動投稿が、昼間の直しで動かなくなるのを防ぐためのもの。失敗すると GitHub から通知が届く（通知の設定による）。
+on:
+  push:
+    branches: [main]
+    paths:
+      - "video/**.py"
+      - "video/requirements.txt"
+      - ".github/workflows/check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: video/requirements.txt
+
+      - name: Install Python packages
+        run: pip install -r video/requirements.txt
+
+      - name: Compile
+        run: python -m py_compile video/*.py video/tools/*.py
+
+      - name: Run every type once without drawing
+        run: python video/tools/smoke.py

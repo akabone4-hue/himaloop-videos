@@ -5,6 +5,9 @@
 | 場所 | 中身 |
 |---|---|
 | [`video/README.md`](video/README.md) | 動画の種類の一覧と、作り方・試し方 |
+| [`video/QUALITY.md`](video/QUALITY.md) | 良い動画の基準と、作るときの手順・点検の項目 |
+| [`video/FEEDBACK.md`](video/FEEDBACK.md) | 型ごとの、これまでの評価と指摘 |
+| [`video/IDEAS.md`](video/IDEAS.md) | これから作る型の候補と、直したい点 |
 | [`video/POSTING.md`](video/POSTING.md) | 投稿の準備と、自動投稿の設定手順 |
 | [`video/KNOWHOW_3D.md`](video/KNOWHOW_3D.md) | 3D の動画（Blender）を作るときのメモ |
 | [`docs/posts/README.md`](docs/posts/README.md) | 投稿した動画の一覧 |
