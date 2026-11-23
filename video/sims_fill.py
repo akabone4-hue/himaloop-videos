@@ -226,7 +226,9 @@ def run_blackhole(v, rng):
             if done_at is not None:
                 break
             dt = v.dt
-            rh += (grow + 0.16 * t) * dt                         # だんだん速く育つ
+            # だんだん速く育つ。残りが少なくなると当たりにくくなって間延びするので、3 個以下ではさらに速く育てる
+            left = int(alive.sum())
+            rh += (grow + 0.16 * t + (9.0 if left <= 2 else 5.0 if left <= 3 else 0.0)) * dt
             D = C - P
             d = np.hypot(D[:, 0], D[:, 1]) + 1e-6
             acc = pull / (d * d + 160.0 ** 2)
