@@ -313,3 +313,142 @@ def run_bricks(v, rng):
         if v.t > 95:
             break
     return {"result": f"{names_all[cols_team[winner]]} wins" if winner is not None else "no finisher"}
+
+
+# ============================================================ bricks2: 条件の違うブロック掘りレース
+# (ボールの数, 1 回当たるごとに減らす量, 画面に出す説明)。どのレーンもブロックの並びは同じ。
+# 3 つの条件は試算で選んだ: 80 回のレースで勝ちが 35 / 19 / 26 回に分かれた組。
+# （平均時間だけをそろえた組では、ばらつきの小さい条件がほとんど勝てなかった）
+BRICK_TRAITS = [
+    (1, 6, "1 ball", "6 damage"),
+    (2, 3, "2 balls", "3 damage"),
+    (6, 1, "6 balls", "1 damage"),
+]
+
+
+def _bricks_core(v, rng, traits, until_all=False):
+    lanes = len(traits)
+    lane_w = 235
+    x0 = CX - lanes * lane_w // 2
+    cols, rows = 4, 11
+    bw, bh = 56, 52
+    top = 760
+    bottom = top + rows * bh
+    cols_team = rng.sample([(255, 77, 90), (61, 139, 255), (61, 220, 132), (255, 201, 60),
+                            (178, 102, 255), (255, 140, 50)], lanes)
+    names_all = {(255, 77, 90): "RED", (61, 139, 255): "BLUE", (61, 220, 132): "GREEN", (255, 201, 60): "YELLOW",
+                 (178, 102, 255): "PURPLE", (255, 140, 50): "ORANGE"}
+    order = list(range(lanes))
+    rng.shuffle(order)
+    trait = [traits[k] for k in order]             # レーンごとの条件（どの色がどの条件かは毎回入れ替わる）
+    # どのレーンも同じ並びのブロック。体力は下の段ほど大きい
+    layout = [[4 + 2 * (r // 3) + (2 if rng.random() < 0.2 else 0) for _ in range(cols)] for r in range(rows)]
+    bricks = [[row[:] for row in layout] for _ in range(lanes)]
+    br = 13.0
+    g = 1500.0
+    balls = []
+    for i in range(lanes):
+        lx = x0 + i * lane_w
+        for k in range(trait[i][0]):
+            balls.append({"lane": i, "x": lx + lane_w * (k + 1) / (trait[i][0] + 1) + rng.uniform(-12, 12),
+                          "y": 560.0 - 34 * (k % 2), "vx": rng.choice([-1, 1]) * rng.uniform(160, 300), "vy": 0.0})
+    lane_done = [None] * lanes
+    parts = Particles()
+    winner = None
+    done_at = None
+    while True:
+        for _ in range(v.sub):
+            for b in balls:
+                i = b["lane"]
+                if b["y"] > bottom + 400:
+                    continue
+                lx = x0 + i * lane_w
+                pad = (lane_w - cols * bw) / 2
+                b["vy"] += g * v.dt
+                b["x"] += b["vx"] * v.dt
+                b["y"] += b["vy"] * v.dt
+                if b["x"] - br < lx + 4:
+                    b["x"], b["vx"] = lx + 4 + br, abs(b["vx"])
+                elif b["x"] + br > lx + lane_w - 4:
+                    b["x"], b["vx"] = lx + lane_w - 4 - br, -abs(b["vx"])
+                if b["y"] - br < 510:
+                    b["y"], b["vy"] = 510 + br, abs(b["vy"])
+                r0 = max(0, int((b["y"] - br - top) // bh))
+                r1 = min(rows - 1, int((b["y"] + br - top) // bh))
+                hit = False
+                for r in range(r0, r1 + 1):
+                    for c in range(cols):
+                        if bricks[i][r][c] <= 0 or hit:
+                            continue
+                        rx, ry = lx + pad + c * bw, top + r * bh
+                        nx = min(max(b["x"], rx), rx + bw)
+                        ny = min(max(b["y"], ry), ry + bh)
+                        dx, dy = b["x"] - nx, b["y"] - ny
+                        if dx * dx + dy * dy < br * br:
+                            hit = True
+                            bricks[i][r][c] -= trait[i][1]
+                            if abs(dx) > abs(dy):
+                                b["vx"] = math.copysign(max(abs(b["vx"]), 220), dx)
+                            else:
+                                if dy < 0:          # 上から当たった → 一定の強さで跳ね上がる
+                                    b["vy"] = -rng.uniform(430, 560)
+                                    b["vx"] = rng.uniform(-330, 330)
+                                else:
+                                    b["vy"] = abs(b["vy"])
+                            v.audio.note(v.t, penta(r, 55), 0.3, "marimba", channel=f"l{i}", min_gap=0.06)
+                            if bricks[i][r][c] <= 0:
+                                parts.burst(rng, (rx + bw / 2, ry + bh / 2), cols_team[i], n=7, speed=260, life=0.45, size=5)
+                if lane_done[i] is None and b["y"] - br > bottom + 6:
+                    lane_done[i] = v.t
+                    if winner is None:
+                        winner = i
+                        done_at = v.t
+                        for k, m in enumerate((60, 64, 67, 72, 76)):
+                            v.audio.note(v.t + 0.07 * k, m, 0.8, "piano")
+            parts.step(v.dt)
+
+        if not v.dry:
+            v.begin(bg=(16, 16, 22))
+            for i in range(lanes):
+                lx = x0 + i * lane_w
+                pad = (lane_w - cols * bw) / 2
+                pygame.draw.rect(v.surf, (26, 26, 36), (lx + 4, 510, lane_w - 8, bottom - 510 + 120))
+                pygame.draw.rect(v.surf, cols_team[i], (lx + 4, 510, lane_w - 8, bottom - 510 + 120), 4)
+                v.text(trait[i][2], 50, (lx + lane_w / 2, 400), color=cols_team[i], outline=4)
+                v.text(trait[i][3], 44, (lx + lane_w / 2, 456), color=(225, 228, 238), outline=3)
+                for r in range(rows):
+                    for c in range(cols):
+                        hp = bricks[i][r][c]
+                        if hp <= 0:
+                            continue
+                        shade = mix((70, 74, 96), (200, 205, 230), min(1.0, hp / 12))
+                        rect = (int(lx + pad + c * bw + 2), top + r * bh + 2, bw - 4, bh - 4)
+                        pygame.draw.rect(v.surf, shade, rect, border_radius=6)
+                        v.text(str(hp), 30, (rect[0] + rect[2] / 2, rect[1] + rect[3] / 2), color=(20, 20, 28), outline=0)
+                pygame.draw.rect(v.surf, mix(cols_team[i], (0, 0, 0), 0.6), (lx + 6, bottom + 10, lane_w - 12, 104))
+                v.text("FINISH", 40, (lx + lane_w / 2, bottom + 62), outline=3)
+            for b in balls:
+                if b["y"] < bottom + 110:
+                    v.circle((255, 255, 255), (b["x"], b["y"]), br + 3)
+                    v.circle(cols_team[b["lane"]], (b["x"], b["y"]), br)
+            parts.draw(v)
+            v.text("First to break through wins", 84, (CX, 200))
+            v.text("Same bricks, different rules", 60, (CX, 290), color=(210, 210, 220))
+            if winner is not None:
+                v.text(f"{names_all[cols_team[winner]]} WINS", 150, (CX, 640), color=cols_team[winner], outline=7)
+        v.end(glow=0.3)
+        if until_all:
+            if all(d is not None for d in lane_done) or v.t > 150:
+                break
+        elif done_at is not None and v.t - done_at > 2.4:
+            break
+        if v.t > 150:
+            break
+    times = {traits.index(trait[i]): lane_done[i] for i in range(lanes)}
+    name = names_all[cols_team[winner]] if winner is not None else "nobody"
+    return {"result": f"{name} ({trait[winner][2]}, {trait[winner][3]}) wins" if winner is not None else "no finisher",
+            "times": times, "winner_trait": traits.index(trait[winner]) if winner is not None else -1}
+
+
+def run_bricks2(v, rng):
+    return _bricks_core(v, rng, BRICK_TRAITS)

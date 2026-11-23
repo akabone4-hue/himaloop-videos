@@ -54,6 +54,10 @@ SIMS = {
         "run": sims_tower.run_towers, "length": (30, 55), "search": False, "ja": "条件の違う 3 つの塔。10 階を最初に壊すのは？",
         "titles": ["3つの塔、10階を最初に壊すのは？", "3 towers, 3 rules - who breaks floor 10 first?"],
     },
+    "bricks2": {
+        "run": sims_more.run_bricks2, "length": (20, 40), "search": False, "ja": "条件の違うブロック掘りレース（強い 1 個／2 個／弱い 6 個）",
+        "titles": ["強い1個か、弱い6個か。先に掘り抜くのは？", "1 strong ball vs 6 weak ones - who digs through first?"],
+    },
     "hexarms": {
         "run": sims_squeeze.run_hexarms, "length": (24, 36), "ja": "六角形の中で 3 本のアームが回り、壁とのあいだで潰されたボールが 2 個に増える",
         "titles": ["六角形の中で、潰されると2倍", "Squeezed = x2 (hexagon)"],
@@ -216,6 +220,17 @@ COPY = {
                    "塔ごとに最初の個数と、床を壊したときの増え方が違います。",
         "ask_en": "Which tower did you pick?", "ask_ja": "どの塔を選んだ？",
         "hash": ["#simulation", "#satisfying"], "keys": ["simulation race", "exponential growth", "tower", "倍々"],
+    },
+    "bricks2": {
+        "en": ["1 strong ball vs 6 weak ones - who digs through first?", "Same bricks, different rules",
+               "6 damage x1, 3 damage x2, or 1 damage x6?"],
+        "ja": ["強い1個か、弱い6個か。先に掘り抜くのは？", "同じブロック、違う条件", "6ダメージ1個・3ダメージ2個・1ダメージ6個"],
+        "rule_en": "Every lane has the same bricks. One lane gets a single ball that hits for 6, one gets two balls "
+                   "that hit for 3, and one gets six balls that hit for 1. The first ball to reach the bottom wins.",
+        "rule_ja": "どのレーンもブロックの並びは同じ。6ダメージのボール1個、3ダメージのボール2個、1ダメージのボール6個の3レーンで、"
+                   "最初に下まで掘り抜いた色が勝ち。",
+        "ask_en": "Which lane did you pick?", "ask_ja": "どのレーンを選んだ？",
+        "hash": ["#brickbreaker", "#ballrace"], "keys": ["brick breaker", "ball race", "ブロック崩し", "レース"],
     },
     "hexarms": {
         "en": ["Squeezed = x2", "1 ball, 3 arms, 6 walls", "How fast does 1 ball become 320?"],
