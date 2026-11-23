@@ -121,7 +121,7 @@ SIMS = {
     },
     "towers2": {
         "run": sims_tower.run_towers2, "length": (30, 50), "search": False, "ja": "3 つの塔の別バージョン（階ごとに 2 倍／毎秒増える／増えない）",
-        "titles": ["倍々か、毎秒増えるか、最初から大勢か", "x2 per floor vs +82 per second vs 1,520 from the start"],
+        "titles": ["倍々か、毎秒増えるか、最初から大勢か", "x2 per floor vs +80 per second vs 1,500 from the start"],
     },
     "cannons": {
         "run": sims_tower.run_cannons, "length": (30, 50), "search": False, "ja": "条件の違う 3 つの砲台。壁を最初に壊すのは？",
@@ -282,9 +282,10 @@ COPY = {
     "beams": {
         "en": ["GREEN = x2, RED = gone", "Can 1 ball reach 300 before the red beam gets it?", "One beam doubles, one beam deletes"],
         "ja": ["緑で2倍、赤で消える", "赤い光線に消される前に、300個まで増える？", "増やす光線と、消す光線"],
-        "rule_en": "A ball that touches the green beam splits in two. A ball that touches the red beam disappears. "
-                   "The beams spin in opposite directions.",
-        "rule_ja": "緑の光線に触れたボールは2個に増え、赤の光線に触れたボールは消えます。2本の光線は逆向きに回っています。",
+        "rule_en": "Every time a ball crosses the green beam, it splits in two. A ball that touches the red beam disappears. "
+                   "The red beam comes out once there are 10 balls, and the beams spin in opposite directions.",
+        "rule_ja": "ボールが緑の光線を横切るたびに、必ず2個に増えます。赤の光線に触れたボールは消えます。"
+                   "赤の光線はボールが10個になると伸びてきます。2本の光線は逆向きに回っています。",
         "ask_en": "Did you think it would make it?", "ask_ja": "300個まで行けると思った？",
         "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "multiply", "ボール 増える"],
     },
@@ -361,9 +362,9 @@ COPY = {
         "hash": ["#plinko", "#galtonboard"], "keys": ["plinko", "galton board", "satisfying", "ピンボール", "確率"],
     },
     "towers2": {
-        "en": ["x2 per floor vs +82 per second vs 1,520 from the start", "3 towers, 3 rules - who breaks floor 10 first?",
+        "en": ["x2 per floor vs +80 per second vs 1,500 from the start", "3 towers, 3 rules - who breaks floor 10 first?",
                "Doubling, steady growth, or a huge head start?"],
-        "ja": ["倍々か、毎秒増えるか、最初から大勢か", "3つの塔、10階を最初に壊すのは？", "2倍ずつ・毎秒82個・最初から1,520個"],
+        "ja": ["倍々か、毎秒増えるか、最初から大勢か", "3つの塔、10階を最初に壊すのは？", "2倍ずつ・毎秒80個・最初から1,500個"],
         "rule_en": "Every hit takes 1 HP off the floor, and each floor is tougher than the one above. "
                    "One tower doubles on every floor, one gains balls every second, and one starts huge but never grows.",
         "rule_ja": "ボールが床に当たるたびに床の体力が1減り、下の階ほど固くなります。"
@@ -484,10 +485,11 @@ COPY.update({
     "gear2": {
         "en": ["Squeezed = x2 (4 arms)", "1 ball, 4 arms, 2,000 balls", "Twice the arms, twice the squeezing"],
         "ja": ["4本のアームに潰されるたび2倍", "ボール1個と4本のアーム、2,000個まで", "アームが倍なら、潰される回数も倍"],
-        "rule_en": "Four arms spin, two each way. A ball squeezed between two arms that pass each other splits in two, "
-                   "and the new balls take the color of that moment. At 2,000 balls the circle breaks.",
-        "rule_ja": "4本のアームが2本ずつ逆向きに回っています。すれ違うアームに挟まれて潰されたボールは2個に増え、その瞬間の色になります。"
-                   "2,000個になると円が割れます。",
+        "rule_en": "Four arms spin, two each way. A ball squeezed between two arms that pass each other splits in two. "
+                   "Every squeeze moves the color one step, so the color shows how often a ball was squeezed. "
+                   "At 2,000 balls the circle breaks.",
+        "rule_ja": "4本のアームが2本ずつ逆向きに回っています。すれ違うアームに挟まれて潰されたボールは2個に増えます。"
+                   "潰されるたびに色が1段進むので、色を見ると何回潰されたかが分かります。2,000個になると円が割れます。",
         "ask_en": "Which color took over the most?", "ask_ja": "一番広がったのは何色？",
         "hash": ["#ballsimulation", "#satisfying"], "keys": ["ball simulation", "satisfying", "multiply", "ボール 増える"],
     },

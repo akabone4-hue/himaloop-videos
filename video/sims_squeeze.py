@@ -20,7 +20,11 @@ from engine import CX, CY, hsv, mix, penta
 from sims_pack import _ball, _ring, _space, _steps
 
 GREY_DARK, GREY = (95, 95, 100), (150, 150, 156)
-BEAM_RED = 0.42       # beams: 赤い光線の長さ（円の半径に対する割合）。長いほど消えやすく、増えるのが遅くなる
+# beams: 下の数字は試算で決めた（20 回のうち 17 回が 22〜40 秒、中央 28.7 秒）。変えたら tools/balance.py beams で見直す
+BEAM_RED = 0.70       # 赤い光線の長さ（円の半径に対する割合）。長いほど消えやすく、増えるのが遅くなる
+BEAM_GREEN_SPEED = (0.6, 0.8)   # 緑が回る速さ（ラジアン/秒）。「横切るたびに必ず割れる」ので、速いとすぐ終わる
+BEAM_RED_SPEED = (1.2, 1.5)     # 赤が回る速さ
+BEAM_RED_FROM = 10              # 玉がこの個数になったら、赤い光線が伸びてくる
 
 
 def _box(sp, half):
@@ -104,6 +108,7 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
     lo, hi = m.get("speed", (320.0, 780.0))
     wait = m.get("wait", (0.6, 1.0))
     memo = {}
+    spared = 0
     while True:
         t = v.t
         m["update"](t, 1.0 / v.fps)
@@ -116,11 +121,15 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
                 for k in _bounces(balls, memo):
                     v.audio.note(t, penta(4 + k % 6, 57), 0.15, "pluck", channel="bn", min_gap=0.08)
             born = 0
+            if "count" in m:
+                m["count"](len(balls), t)
             if "kill" in m:                    # 仕掛けによっては、触れたボールが消える（最後の 1 個は消えない）
                 for item in list(balls):
-                    if len(balls) <= 1:
-                        break
                     x, y = item[0].position.x, item[0].position.y
+                    if len(balls) <= 1:
+                        # 最後の 1 個は消せない。ここで触れていたら「触れたのに消えない」絵になるので数えておく
+                        spared += bool(m["kill"](x, y))
+                        break
                     if m["kill"](x, y):
                         sp.remove(item[0], item[1])
                         balls.remove(item)
@@ -129,7 +138,9 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
             for item in list(balls):
                 if len(balls) >= cap or born >= m.get("per_frame", 6):
                     break
-                if t < item[3]:
+                # 「横切ったら割れる」仕掛けは、待ち時間に関係なく毎コマ全部の玉を調べる（当たったのに割れない玉を出さない）
+                cross = m["crossed"](item[0]) if "crossed" in m else None
+                if cross is None and t < item[3]:
                     continue
                 body = item[0]
                 touch = []                     # ボールに触れている「ボール以外の物」: (向き x, 向き y, 動く部品か)
@@ -144,6 +155,8 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
                             pinch = (p[0] - q[0], p[1] - q[1])
                 if pinch is None and "pinched" in m:           # 仕掛けごとの判定（形から決める）
                     pinch = m["pinched"](body.position.x, body.position.y)
+                if pinch is None:
+                    pinch = cross
                 if pinch is None:
                     continue
                 d = math.hypot(*pinch) or 1.0
@@ -227,7 +240,7 @@ def _run(v, rng, mech, caption, cap=320, br=10.0, bottom=CY + 580):
             break
         if v.t > 80:
             break
-    return {"result": f"1 -> {len(balls)} balls"}
+    return {"result": f"1 -> {len(balls)} balls", "spared": spared}
 
 
 # ------------------------------------------------------------------ hammer: ピストンが壁を叩く
@@ -614,46 +627,72 @@ def run_hexarms(v, rng):
 
 # ------------------------------------------------------------------ beams: 緑の光線で 2 倍、赤の光線で消える
 def _mech_beams(sp, rng, br):
-    """円の中心から 2 本の光線が伸びて、別々の速さで回る。緑に触れたボールは 2 つに割れ、赤に触れたボールは消える。
-    赤は緑より短いので、全体としては増えていく（増えたり減ったりしながら上限へ向かう）。"""
+    """円の中心から 2 本の光線が伸びて、逆向きに回る。
+    緑: 玉の中心が光線を横切るたびに、必ず 2 つに割れる（待ち時間も上限もない。横切ったのに割れない玉は出ない）。
+    赤: 触れた玉は必ず消える。赤は玉が BEAM_RED_FROM 個になったとき中心から伸びてくる（1 個目が消えて終わらないように）。
+    赤は緑より短く遅いので、全体としては増えていく。"""
     R = 440.0
     walls = _ring(sp, (CX, CY), R, n=140, thick=5.0, elasticity=1.0, friction=0.0)
-    wg = rng.choice((-1, 1)) * rng.uniform(1.5, 1.8)            # 緑が回る速さ（ラジアン/秒）
-    wr = -math.copysign(rng.uniform(0.8, 1.0), wg)              # 赤は逆向きに回る
+    wg = rng.choice((-1, 1)) * rng.uniform(*BEAM_GREEN_SPEED)   # 緑が回る速さ（ラジアン/秒）
+    wr = -math.copysign(rng.uniform(*BEAM_RED_SPEED), wg)       # 赤は逆向きに回る
     ag0, ar0 = rng.uniform(0, math.tau), rng.uniform(0, math.tau)
     len_g, len_r = R - 8, R * BEAM_RED                          # 緑は端から端まで（中心の両側）、赤は片側だけで短い
-    state = {"t": 0.0}
+    state = {"t": 0.0, "red_at": None}
+    side = {}                                                   # 玉の body → 緑の光線のどちら側にいたか
 
-    def tip(a0, w, length, t):
+    def unit(a0, w, t):
         a = a0 + w * t
-        return (CX + math.cos(a) * length, CY + math.sin(a) * length), (math.cos(a), math.sin(a))
+        return math.cos(a), math.sin(a)
 
-    def near(x, y, a0, w, length, t, width, both=False):
-        _p, (ux, uy) = tip(a0, w, length, t)
-        rx, ry = x - CX, y - CY
-        along = rx * ux + ry * uy
-        if both:
-            along = abs(along)
-        return 26 < along < length and abs(rx * uy - ry * ux) < width
+    def red_len(t):
+        if state["red_at"] is None:
+            return 0.0
+        return len_r * min(1.0, (t - state["red_at"]) / 0.8)
 
     def update(t, fdt):
         state["t"] = t
 
-    def pinched(x, y):
-        if near(x, y, ag0, wg, len_g, state["t"], br + 5, both=True):
-            _p, (ux, uy) = tip(ag0, wg, len_g, state["t"])
-            return (-uy, ux)                    # 光線と直角の向き（2 つに割れて、光線に沿って前後へ飛ぶ）
-        return None
+    def count(n, t):
+        if state["red_at"] is None and n >= BEAM_RED_FROM:
+            state["red_at"] = t
+
+    def crossed(body):
+        ux, uy = unit(ag0, wg, state["t"])
+        rx, ry = body.position.x - CX, body.position.y - CY
+        along, off = rx * ux + ry * uy, rx * uy - ry * ux
+        now = 1 if off > 0 else -1
+        before = side.get(body)
+        side[body] = now
+        if before is None or before == now or not 26 < abs(along) < len_g:
+            return None
+        return (uy * now, -ux * now)            # 光線から離れる向き（いま入った側）
+
+    def split(x, y, n, vel, rng_):
+        # 2 つとも、横切って入った側へ、光線から離れるように少し開いて飛ぶ（すぐ戻って横切り直さない）
+        out = []
+        for turn in (-0.6, 0.6):
+            c_, s_ = math.cos(turn), math.sin(turn)
+            dx, dy = n[0] * c_ - n[1] * s_, n[0] * s_ + n[1] * c_
+            out += [(x + dx * 8, y + dy * 8), (dx * 470, dy * 470)]
+        return tuple(out)
 
     def kill(x, y):
-        return near(x, y, ar0, wr, len_r, state["t"], br + 4)
+        length = red_len(state["t"])
+        if length < 40:
+            return False
+        ux, uy = unit(ar0, wr, state["t"])
+        rx, ry = x - CX, y - CY
+        return 26 < rx * ux + ry * uy < length and abs(rx * uy - ry * ux) < br + 4
 
     def frame(v):
         v.circle((245, 245, 245), (CX, CY), R + 3, width=5)
 
     def draw(v, t):
-        for a0, w, length, col, both in ((ag0, wg, len_g, (60, 255, 120), True), (ar0, wr, len_r, (255, 60, 70), False)):
-            p, _u = tip(a0, w, length, t)
+        for a0, w, length, col, both in ((ag0, wg, len_g, (60, 255, 120), True), (ar0, wr, red_len(t), (255, 60, 70), False)):
+            if length < 30:
+                continue
+            ux, uy = unit(a0, w, t)
+            p = (CX + ux * length, CY + uy * length)
             q = (2 * CX - p[0], 2 * CY - p[1]) if both else (CX, CY)
             pygame.draw.line(v.surf, mix((0, 0, 0), col, 0.35), q, p, 18)
             pygame.draw.line(v.surf, col, q, p, 8)
@@ -666,9 +705,13 @@ def _mech_beams(sp, rng, br):
 
     a = rng.uniform(0, math.tau)
     return {"walls": walls, "clamp": _circle_clamp(R, br), "update": update, "frame": frame, "draw": draw,
-            "pinched": pinched, "kill": kill, "start": (CX + math.cos(a) * 300, CY + math.sin(a) * 300),
-            "speed": (300.0, 560.0), "wait": (0.55, 0.85), "per_frame": 16}
+            "crossed": crossed, "split": split, "kill": kill, "count": count,
+            "start": (CX + math.cos(a) * 300, CY + math.sin(a) * 300),
+            "speed": (300.0, 560.0), "wait": (0.0, 0.0), "per_frame": 10 ** 6}
 
 
 def run_beams(v, rng):
-    return _run(v, rng, _mech_beams, "GREEN = x2   RED = gone", cap=300, bottom=CY + 640)
+    meta = _run(v, rng, _mech_beams, "GREEN = x2   RED = gone", cap=300, bottom=CY + 640)
+    if meta.get("spared") and v.dry:
+        v.frames = int(99 * v.fps)              # 最後の 1 個が赤に触れた（消えないのは決まりに反する）。このシードは使わない
+    return meta

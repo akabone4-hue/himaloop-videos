@@ -402,15 +402,27 @@ def run_merge(v, rng):
     for p, q in WALLS:
         s_ = pymunk.Segment(st, p, q, 6)
         s_.elasticity, s_.friction = 0.1, 0.05
+        s_.collision_type = 1
         sp.add(s_)
     pairs = []
 
+    # まとまるのは「着地した玉」に触れたときだけ。落ちている途中の玉どうしは、触れてもまとまらない
+    # （口から続けて出た同じ数字が、下に着く前に空中でまとまってしまうのを防ぐ）。
+    # 着地 = 壁か底に触れた、または着地した玉に触れた。
+    def on_wall(arb, _space, _data):
+        for s_ in arb.shapes:
+            if s_.collision_type == 2:
+                s_.landed = True
+
     def on_touch(arb, _space, _data):
         a, b = arb.shapes
-        if a.level == b.level:
-            pairs.append((a, b))
+        if a.landed or b.landed:
+            a.landed = b.landed = True
+            if a.level == b.level:
+                pairs.append((a, b))
 
-    sp.on_collision(2, 2, begin=on_touch)
+    sp.on_collision(1, 2, begin=on_wall)
+    sp.on_collision(2, 2, pre_solve=on_touch)       # 触れているあいだ毎回調べる（あとから着地した場合も拾う）
     balls = {}                                  # shape → [body, レベル, できた時刻]
 
     def add(pos, k, t, vel=(0, 0)):
@@ -418,6 +430,7 @@ def run_merge(v, rng):
         b, c = _ball(sp, pos, r, vel=vel, elasticity=0.1, friction=0.05, mass=0.5 * 1.5 ** k)
         c.collision_type = 2
         c.level = k
+        c.landed = False
         balls[c] = [b, k, t]
         return c
 
@@ -455,7 +468,7 @@ def run_merge(v, rng):
                         vel = ((ba.velocity.x + bb.velocity.x) / 2, (ba.velocity.y + bb.velocity.y) / 2)
                         sp.remove(ba, a, bb, b)
                         del balls[a], balls[b]
-                        add(pos, k, t, vel=vel)
+                        add(pos, k, t, vel=vel).landed = True
                         pops.append([pos[0], pos[1], color(k), 0.0, _merge_r(k)])
                         v.audio.note(t, 48 + 3 * k + (k // 2), 0.25 + 0.05 * k, "marimba", channel=f"m{k}", min_gap=0.04)
                         if k > best:

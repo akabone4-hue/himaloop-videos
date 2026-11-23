@@ -19,7 +19,9 @@ QUEUE = os.path.join(HERE, "post_queue.txt")
 # 自動投稿で回す型。確認が済んだものだけを入れる。
 # 入れていないもの: fill（参考動画なしで保留）、marble・faces・chime（3D。自動投稿に入れるかは検討中）
 ROTATION = ["towers", "colorwar", "walls", "gear", "weapon", "glass", "bricks", "battle", "rings", "arms",
-            "multiply", "hammer", "music", "rays", "cam", "grow"]
+            "multiply", "hammer", "music", "rays", "cam", "grow",
+            # 2026-11-23 に「合格」と言われた型
+            "cannons", "merge", "bomb", "towers2", "blackhole", "bricks2", "rps"]
 
 
 def read_queue():

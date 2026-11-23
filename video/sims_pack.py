@@ -642,10 +642,18 @@ def _glow_sprite(size=256):
 
 def run_gear2(v, rng):
     """歯車の別バージョン: アームが 4 本（2 本ずつ逆向き）。すれ違う回数が倍になる。"""
-    return run_gear(v, rng, pairs=2, rho=135.0, slow=0.5, cap=2000)
+    return run_gear(v, rng, pairs=2, rho=135.0, slow=0.5, cap=2000, by_squeezes=True)
 
 
-def run_gear(v, rng, pairs=1, rho=150.0, slow=1.0, cap=1000):
+# 色を「潰された回数」で決めるときの色の並び（1 回潰されるたびに 1 つ先へ進む）
+SQUEEZE_STEPS = 12
+
+
+def _squeeze_color(g):
+    return tuple(int(c) for c in hsv(0.58 + g / SQUEEZE_STEPS, 0.85, 1.0))
+
+
+def run_gear(v, rng, pairs=1, rho=150.0, slow=1.0, cap=1000, by_squeezes=False):
     """円の中心の歯車に、半円のアームが 2 本付いて逆向きに回る。2 本のアームがすれ違うときに
     あいだに挟まれて潰されたボールは 2 個に増える。増えるほど粒が小さくなり、最後は円が割れる。"""
     R = 470.0
@@ -685,7 +693,11 @@ def run_gear(v, rng, pairs=1, rho=150.0, slow=1.0, cap=1000):
         balls.append([b, c, col, t_next])
 
     a = rng.uniform(0, math.tau)
-    add((CX + math.cos(a) * 170, CY + math.sin(a) * 170), (-math.sin(a) * 260, math.cos(a) * 260), order[0], 0.4)
+    # by_squeezes: 色は「その玉が何回潰されたか」で決まる。違う色の玉が一緒に潰されても、それぞれ 1 つ先の色になる
+    # （時刻で色を決めると、違う色の玉が同時に潰されたとき全部同じ色になってしまう）
+    squeezes = {}                               # 回転体ではなく玉の body → 潰された回数
+    add((CX + math.cos(a) * 170, CY + math.sin(a) * 170), (-math.sin(a) * 260, math.cos(a) * 260),
+        _squeeze_color(0) if by_squeezes else order[0], 0.4)
     rings = []                                  # 増えた瞬間の輪 [x, y, 色, 経過]
     n_steps, dt = _steps(v)
     target_rad = rad
@@ -729,6 +741,10 @@ def run_gear(v, rng, pairs=1, rho=150.0, slow=1.0, cap=1000):
                     continue
                 body = item[0]
                 x, y = body.position.x, body.position.y
+                if by_squeezes:
+                    g = squeezes.get(body, 0) + 1
+                    squeezes[body] = g
+                    col = _squeeze_color(g)
                 # その場で 2 つに割れ、アームのすき間に沿って反対向きに弾け飛ぶ
                 ax_, ay_ = float(aways[side[i]][i][0]), float(aways[side[i]][i][1])
                 tx_, ty_ = -ay_, ax_
@@ -737,6 +753,8 @@ def run_gear(v, rng, pairs=1, rho=150.0, slow=1.0, cap=1000):
                 body.position = (x + tx_ * 3, y + ty_ * 3)
                 item[2], item[3] = col, t + rng.uniform(0.45, 0.7)
                 add((x - tx_ * 3, y - ty_ * 3), (-tx_ * k, -ty_ * k), col, t + rng.uniform(0.45, 0.7))
+                if by_squeezes:
+                    squeezes[balls[-1][0]] = g
                 rings.append([x, y, col, 0.0])
                 born += 1
             if born:

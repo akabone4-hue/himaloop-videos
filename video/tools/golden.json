@@ -1,47 +1,55 @@
 {
- "arms 202611281": [
-  32.13,
-  "seed 202611281: 1 -> 320 balls"
- ],
  "arms 4": [
   25.42,
   "seed 4: 1 -> 320 balls"
  ],
- "battle 202611271": [
-  22.28,
-  "seed 202611273: YELLOW wins"
+ "blackhole 2": [
+  24.53,
+  "seed 2: YELLOW wins"
  ],
- "bricks 202611270": [
-  31.97,
-  "seed 202611271: PURPLE wins"
+ "blackhole 202612041": [
+  25.48,
+  "seed 202612042: YELLOW wins"
  ],
- "bricks 202612050": [
-  34.43,
-  "seed 202612051: GREEN wins"
+ "bomb 1": [
+  29.6,
+  "seed 1: ORANGE wins"
  ],
- "cam 202612010": [
-  21.8,
-  "seed 202612010: 1 -> 320 balls"
+ "bomb 202612031": [
+  30.98,
+  "seed 202612031: CYAN wins"
+ ],
+ "bricks2 202612050": [
+  30.92,
+  "seed 202612050: PURPLE (6 balls, 1 damage) wins"
+ ],
+ "bricks2 3": [
+  24.03,
+  "seed 3: ORANGE (2 balls, 3 damage) wins"
+ ],
+ "cam 202612011": [
+  23.43,
+  "seed 202612013: 1 -> 320 balls"
  ],
  "cam 6": [
   20.85,
   "seed 6: 1 -> 320 balls"
  ],
- "colorwar 202612021": [
-  38.2,
-  "seed 202612021: YELLOW (9 balls, never grows) wins with 26%"
+ "cannons 202612021": [
+  40.18,
+  "seed 202612021: LIME (8 cannons) wins at 36.1s; wall 1200, 4 shots/s per cannon"
  ],
- "gear 202612031": [
-  28.73,
-  "seed 202612031: 1 -> 1001 balls (1000 squeezes)"
+ "cannons 3": [
+  34.42,
+  "seed 3: PINK (x2 speed / 5s) wins at 30.9s; wall 1000, 2 shots/s per cannon"
  ],
- "glass 202612041": [
-  36.78,
-  "seed 202612041: glass broke at 34.0s after 205 hits, 462 shots"
+ "fillwave 2": [
+  26.58,
+  "seed 2: heart: 1 -> 706 balls, then the wave"
  ],
- "grow 202612011": [
-  22.55,
-  "seed 202612011: 60 bounces"
+ "grow 202612020": [
+  27.42,
+  "seed 202612021: 60 bounces"
  ],
  "grow 21": [
   29.65,
@@ -51,48 +59,40 @@
   35.98,
   "seed 2: 1 -> 320 balls"
  ],
- "hammer 202611291": [
-  27.48,
-  "seed 202611291: 1 -> 320 balls"
+ "merge 2": [
+  34.22,
+  "seed 2: 334 balls dropped, reached 1024"
  ],
- "multiply 202611290": [
-  26.53,
-  "seed 202611291: 1 -> 220 balls, then every ball bursts into 3"
+ "merge 202612030": [
+  31.22,
+  "seed 202612031: 299 balls dropped, reached 1024"
  ],
  "multiply 21": [
   35.95,
   "seed 21: 1 -> 220 balls, then every ball bursts into 3"
  ],
- "music 202611300": [
-  27.87,
-  "seed 202611300: 104 notes"
- ],
  "music 21": [
   26.37,
   "seed 21: 90 notes"
  ],
- "rays 202611301": [
-  34.07,
-  "seed 202611301: 1 -> 2048 rays"
- ],
- "rings 202611280": [
-  37.32,
-  "seed 202611280: escaped in 35.3s"
+ "plinko 1": [
+  35.38,
+  "seed 1: counts [0, 4, 8, 47, 71, 99, 121, 107, 88, 35, 13, 6, 1]"
  ],
  "rings 21": [
   28.2,
   "seed 21: escaped in 26.2s"
  ],
- "towers 202612020": [
-  40.12,
-  "seed 202612020: CYAN (5 x3 per floor) wins at 37.0s; 5 x3 per floor, 20 x2 per floor, 300 +300 p"
+ "rps 5": [
+  27.37,
+  "seed 5: SCISSORS wins (102 of 102)"
  ],
- "walls 202612030": [
-  35.92,
-  "seed 202612030: GREEN wins after 94 turns, 15 walls, 4 close blocks"
+ "towers2 1": [
+  38.63,
+  "seed 1: LIME (80 +80 per second) wins at 35.5s; 1,500 never grows, 15 x2 per floor, 80 +"
  ],
- "weapon 202612040": [
-  27.17,
-  "seed 202612041: SPEAR vs SWORD: SWORD wins"
+ "towers2 202612040": [
+  38.38,
+  "seed 202612040: PINK (15 x2 per floor) wins at 34.4s; 80 +80 per second, 15 x2 per floor, 1,500 "
  ]
 }
