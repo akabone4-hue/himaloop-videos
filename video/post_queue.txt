@@ -19,3 +19,4 @@ rps 5
 plinko 1
 fillwave 2
 beams 7
+rps2 5
