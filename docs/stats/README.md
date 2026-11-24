@@ -1,6 +1,6 @@
 # 動画の数字
 
-最終更新: 2026-11-23 20:39 JST ／ 1 日 1 回、自動で更新されます
+最終更新: 2026-11-24 12:47 JST ／ 1 日 1 回、自動で更新されます
 
 ## 見方
 
@@ -12,27 +12,31 @@
 
 | 投稿日時 | 種類 | タイトル | YouTube 再生数 | 高評価 | コメント | 平均視聴率 | 平均視聴時間 | 共有 | 登録者 | TikTok 再生数 | X 表示回数 |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 11/23 5:42 | glass | [1 cannon vs a wall of glass](https://www.youtube.com/shorts/e2P10hreeGU) | 1,048 | 2 | 0 | — | — | — | — | — | — |
-| 11/22 5:29 | battle | [Last ball standing wins](https://www.youtube.com/shorts/iYbTmwm3VQM) | 1,396 | 11 | 0 | — | — | — | — | — | — |
-| 11/21 6:48 | gear | [Every squeeze makes it worse](https://www.youtube.com/shorts/sz0c4TY6K5A) | 22,751 | 116 | 9 | 85% | 24.0秒 | 3 | +1 | — | — |
-| 11/20 7:08 | walls | [First to the crown wins](https://www.youtube.com/shorts/NMIfHBVv8os) | 1,231 | 8 | 1 | 81% | 29.0秒 | 0 | +1 | — | — |
-| 11/19 6:51 | colorwar | [More balls or faster growth - which one wins?](https://www.youtube.com/shorts/avHjh_ck6Ok) | 1,492 | 9 | 3 | 66% | 25.0秒 | 0 | +0 | — | — |
-| 11/18 7:14 | towers | [x3 per floor vs x2 per floor vs a huge head start](https://www.youtube.com/shorts/lxaU-MB2SlE) | 1,685 | 12 | 0 | 81% | 33.0秒 | 0 | +1 | — | — |
-| 11/17 7:55 | bricks | [Which color digs through first?](https://www.youtube.com/shorts/0ZMtdKle4x8) | 1,293 | 4 | 0 | 57% | 21.0秒 | 0 | +0 | — | 1 |
-| 11/15 10:51 | weapon | [DAGGER vs HAMMER - who wins?](https://www.youtube.com/shorts/COidDVDyF2M) | 1,488 | 16 | 0 | 71% | 22.0秒 | 0 | +2 | — | — |
+| 11/24 7:11 | arms | [1 ball, 4 spinning arms](https://www.youtube.com/shorts/qR1avpsgZeo) | 38 | 0 | 0 | — | — | — | — | — | — |
+| 11/23 23:12 | rings | [Can the ball escape 10 rings?](https://www.youtube.com/shorts/ESD_-rhrV90) | 1,590 | 28 | 0 | — | — | — | — | — | — |
+| 11/23 5:42 | glass | [1 cannon vs a wall of glass](https://www.youtube.com/shorts/e2P10hreeGU) | 1,058 | 2 | 0 | — | — | — | — | — | 1 |
+| 11/22 5:29 | battle | [Last ball standing wins](https://www.youtube.com/shorts/iYbTmwm3VQM) | 1,422 | 11 | 0 | 76% | 19.0秒 | 0 | +0 | — | 1 |
+| 11/21 6:48 | gear | [Every squeeze makes it worse](https://www.youtube.com/shorts/sz0c4TY6K5A) | 22,959 | 116 | 9 | 92% | 26.0秒 | 3 | +1 | — | — |
+| 11/20 7:08 | walls | [First to the crown wins](https://www.youtube.com/shorts/NMIfHBVv8os) | 1,240 | 8 | 1 | 81% | 29.0秒 | 0 | +1 | — | — |
+| 11/19 6:51 | colorwar | [More balls or faster growth - which one wins?](https://www.youtube.com/shorts/avHjh_ck6Ok) | 1,495 | 9 | 3 | 66% | 25.0秒 | 0 | +0 | — | — |
+| 11/18 7:14 | towers | [x3 per floor vs x2 per floor vs a huge head start](https://www.youtube.com/shorts/lxaU-MB2SlE) | 1,688 | 12 | 0 | 81% | 33.0秒 | 0 | +1 | — | — |
+| 11/17 7:55 | bricks | [Which color digs through first?](https://www.youtube.com/shorts/0ZMtdKle4x8) | 1,295 | 4 | 0 | 57% | 21.0秒 | 0 | +0 | — | 1 |
+| 11/15 10:51 | weapon | [DAGGER vs HAMMER - who wins?](https://www.youtube.com/shorts/COidDVDyF2M) | 1,492 | 16 | 0 | 71% | 22.0秒 | 0 | +2 | — | — |
 
 ## 種類ごとの平均
 
 | 種類 | 内容 | 本数 | 1 本あたりの再生数 | 平均視聴率 |
 |---|---|---:|---:|---:|
-| gear | 歯車の2本のアームに挟まれて潰されたボールが2個に増える | 1 | 22,751 | 85% |
-| towers | 条件の違う 3 つの塔。10 階を最初に壊すのは？ | 1 | 1,685 | 81% |
-| colorwar | 4 色の陣取り合戦 | 1 | 1,492 | 66% |
-| weapon | 武器を持ったボールの 1 対 1（当てるたびに強くなる） | 1 | 1,488 | 71% |
-| battle | HP 制のボールバトル（最後の 1 個が勝ち） | 1 | 1,396 | — |
-| bricks | ブロックを掘り進むレース（4 色） | 1 | 1,293 | 57% |
-| walls | 王冠を目指して壁で邪魔し合う盤上ゲーム | 1 | 1,231 | 81% |
-| glass | 右の砲台がガラスを撃つ。当たったボールは消えてガラスが欠け、外れてくぼみに落ちたボールは倍率ぶん増えて撃ち直される | 1 | 1,048 | — |
+| gear | 歯車の2本のアームに挟まれて潰されたボールが2個に増える | 1 | 22,959 | 92% |
+| towers | 条件の違う 3 つの塔。10 階を最初に壊すのは？ | 1 | 1,688 | 81% |
+| rings | 回転するリングのすき間から脱出 | 1 | 1,590 | — |
+| colorwar | 4 色の陣取り合戦 | 1 | 1,495 | 66% |
+| weapon | 武器を持ったボールの 1 対 1（当てるたびに強くなる） | 1 | 1,492 | 71% |
+| battle | HP 制のボールバトル（最後の 1 個が勝ち） | 1 | 1,422 | 76% |
+| bricks | ブロックを掘り進むレース（4 色） | 1 | 1,295 | 57% |
+| walls | 王冠を目指して壁で邪魔し合う盤上ゲーム | 1 | 1,240 | 81% |
+| glass | 右の砲台がガラスを撃つ。当たったボールは消えてガラスが欠け、外れてくぼみに落ちたボールは倍率ぶん増えて撃ち直される | 1 | 1,058 | — |
+| arms | 四隅のアームと壁に挟まれて潰されたボールが2個に増える | 1 | 38 | — |
 
 本数が少ないうちは、1 本の当たり外れで平均が大きく動きます。各種類 3 本以上たまってから比べてください。
 
@@ -43,8 +47,8 @@
 
 | 時間帯 | 本数 | 1 本あたりの再生数 | まん中の値 | 平均視聴率 |
 |---|---:|---:|---:|---:|
-| 朝（7:10 ごろ） | 8 | 4,048 | 1,442 | 74% |
-| 夜（23:10 ごろ） | 0 | — | — | — |
+| 朝（7:10 ごろ） | 9 | 3,632 | 1,422 | 75% |
+| 夜（23:10 ごろ） | 1 | 1,590 | 1,590 | — |
 
 ## 新しいコメント（YouTube）
 
@@ -56,15 +60,15 @@
 
 | 国 | 再生数 | 割合 | 7:10 の投稿は現地で | 23:10 の投稿は現地で |
 |---|---:|---:|---|---|
-| アメリカ | 4,441 | 52% | 16 時ごろ | 08 時ごろ |
-| ベトナム | 1,003 | 12% | 05 時ごろ | 21 時ごろ |
-| インドネシア | 966 | 11% | 05 時ごろ | 21 時ごろ |
-| 日本 | 641 | 8% | 07 時ごろ | 23 時ごろ |
-| 韓国 | 443 | 5% | 07 時ごろ | 23 時ごろ |
-| インド | 132 | 2% | 03 時ごろ | 19 時ごろ |
-| ブラジル | 111 | 1% | 19 時ごろ | 11 時ごろ |
-| ロシア | 108 | 1% | 01 時ごろ | 17 時ごろ |
-| バングラデシュ | 99 | 1% | 04 時ごろ | 20 時ごろ |
-| フィリピン | 90 | 1% | 06 時ごろ | 22 時ごろ |
-| TW | 89 | 1% | — | — |
-| イラク | 57 | 1% | 01 時ごろ | 17 時ごろ |
+| アメリカ | 5,230 | 39% | 16 時ごろ | 08 時ごろ |
+| ベトナム | 2,076 | 16% | 05 時ごろ | 21 時ごろ |
+| インドネシア | 1,621 | 12% | 05 時ごろ | 21 時ごろ |
+| 日本 | 1,575 | 12% | 07 時ごろ | 23 時ごろ |
+| 韓国 | 665 | 5% | 07 時ごろ | 23 時ごろ |
+| インド | 349 | 3% | 03 時ごろ | 19 時ごろ |
+| フィリピン | 265 | 2% | 06 時ごろ | 22 時ごろ |
+| ブラジル | 261 | 2% | 19 時ごろ | 11 時ごろ |
+| ロシア | 155 | 1% | 01 時ごろ | 17 時ごろ |
+| タイ | 153 | 1% | 05 時ごろ | 21 時ごろ |
+| バングラデシュ | 147 | 1% | 04 時ごろ | 20 時ごろ |
+| TW | 142 | 1% | — | — |
