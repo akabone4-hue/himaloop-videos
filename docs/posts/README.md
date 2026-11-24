@@ -1,6 +1,6 @@
 # 投稿一覧
 
-最終更新: 2026-11-24 07:11 JST ／ 新しい動画が上に並びます
+最終更新: 2026-11-24 23:12 JST ／ 新しい動画が上に並びます
 
 YouTube・TikTok・X へは自動で投稿されます（TikTok と X は、YouTube の約 10 分後に Buffer 経由）。
 下のリンクと文面は、手で投稿し直したいとき用です。
@@ -11,6 +11,27 @@ YouTube・TikTok・X へは自動で投稿されます（TikTok と X は、YouT
 2. 「TikTok の投稿画面を開く」を押し、保存した mp4 を選ぶ
 3. 下の文面の右上にあるコピーボタンを押し、説明欄に貼って投稿する
 4. X も同じ手順で、X 用の文面を貼る
+
+---
+
+## 11/24（火） Every escape = 2 new balls
+
+- 種類: 脱出するたびにボールが 2 個増える ／ 長さ: 36.0秒
+- **[動画をダウンロード](https://github.com/akabone4-hue/himaloop-videos/releases/download/videos/multiply_21.mp4)**（multiply_21.mp4）
+- YouTube: https://www.youtube.com/shorts/BKnFYXR3_BE
+
+**TikTok** ／ [TikTok の投稿画面を開く](https://www.tiktok.com/tiktokstudio/upload)
+
+````text
+Every escape = 2 new balls
+#bouncingball #ballescape #satisfying #simulation #fyp
+````
+
+**X** ／ [X の投稿画面を開く](https://x.com/compose/post)
+
+````text
+Every escape = 2 new balls
+````
 
 ---
 
