@@ -1,6 +1,6 @@
 # 投稿一覧
 
-最終更新: 2026-11-25 07:12 JST ／ 新しい動画が上に並びます
+最終更新: 2026-11-25 23:12 JST ／ 新しい動画が上に並びます
 
 YouTube・TikTok・X へは自動で投稿されます（TikTok と X は、YouTube の約 10 分後に Buffer 経由）。
 下のリンクと文面は、手で投稿し直したいとき用です。
@@ -11,6 +11,27 @@ YouTube・TikTok・X へは自動で投稿されます（TikTok と X は、YouT
 2. 「TikTok の投稿画面を開く」を押し、保存した mp4 を選ぶ
 3. 下の文面の右上にあるコピーボタンを押し、説明欄に貼って投稿する
 4. X も同じ手順で、X 用の文面を貼る
+
+---
+
+## 11/25（水） Für Elise but every bounce is a note
+
+- 種類: 曲に合わせて跳ねるボール（1 バウンド = 1 音） ／ 長さ: 26.4秒
+- **[動画をダウンロード](https://github.com/akabone4-hue/himaloop-videos/releases/download/videos/music_21.mp4)**（music_21.mp4）
+- YouTube: https://www.youtube.com/shorts/53f4O6ovRkE
+
+**TikTok** ／ [TikTok の投稿画面を開く](https://www.tiktok.com/tiktokstudio/upload)
+
+````text
+Für Elise but every bounce is a note
+#bouncingball #classicalmusic #satisfying #simulation #fyp
+````
+
+**X** ／ [X の投稿画面を開く](https://x.com/compose/post)
+
+````text
+Für Elise but every bounce is a note
+````
 
 ---
 
