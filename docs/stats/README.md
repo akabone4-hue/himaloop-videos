@@ -1,6 +1,6 @@
 # 動画の数字
 
-最終更新: 2026-11-25 14:40 JST ／ 1 日 1 回、自動で更新されます
+最終更新: 2026-11-26 14:28 JST ／ 1 日 1 回、自動で更新されます
 
 ## 見方
 
@@ -12,35 +12,39 @@
 
 | 投稿日時 | 種類 | タイトル | YouTube 再生数 | 高評価 | コメント | 平均視聴率 | 平均視聴時間 | 共有 | 登録者 | TikTok 再生数 | X 表示回数 |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 11/25 7:12 | hammer | [How fast does 1 ball become 320?](https://www.youtube.com/shorts/XheT0pA06UE) | 1,127 | 8 | 0 | — | — | — | — | — | — |
-| 11/24 23:12 | multiply | [Every escape = 2 new balls](https://www.youtube.com/shorts/BKnFYXR3_BE) | 1,313 | 14 | 0 | — | — | — | — | — | — |
-| 11/24 7:11 | arms | [1 ball, 4 spinning arms](https://www.youtube.com/shorts/qR1avpsgZeo) | 433 | 1 | 0 | — | — | — | — | — | — |
-| 11/23 23:12 | rings | [Can the ball escape 10 rings?](https://www.youtube.com/shorts/ESD_-rhrV90) | 1,701 | 27 | 0 | — | — | — | — | — | — |
-| 11/23 5:42 | glass | [1 cannon vs a wall of glass](https://www.youtube.com/shorts/e2P10hreeGU) | 1,293 | 5 | 0 | 71% | 26.0秒 | 0 | +0 | — | 1 |
-| 11/22 5:29 | battle | [Last ball standing wins](https://www.youtube.com/shorts/iYbTmwm3VQM) | 1,454 | 11 | 0 | 75% | 18.0秒 | 0 | +0 | — | 1 |
-| 11/21 6:48 | gear | [Every squeeze makes it worse](https://www.youtube.com/shorts/sz0c4TY6K5A) | 23,148 | 117 | 9 | 92% | 26.0秒 | 5 | +8 | — | — |
-| 11/20 7:08 | walls | [First to the crown wins](https://www.youtube.com/shorts/NMIfHBVv8os) | 1,245 | 8 | 1 | 82% | 29.0秒 | 0 | +1 | — | — |
-| 11/19 6:51 | colorwar | [More balls or faster growth - which one wins?](https://www.youtube.com/shorts/avHjh_ck6Ok) | 1,502 | 9 | 3 | 67% | 26.0秒 | 0 | +0 | — | — |
+| 11/26 7:11 | cam | [Pinched = x2](https://www.youtube.com/shorts/p2OcZayWmKo) | 929 | 8 | 0 | — | — | — | — | — | — |
+| 11/25 23:12 | music | [Für Elise but every bounce is a note](https://www.youtube.com/shorts/53f4O6ovRkE) | 1,182 | 19 | 0 | — | — | — | — | — | — |
+| 11/25 7:12 | hammer | [How fast does 1 ball become 320?](https://www.youtube.com/shorts/XheT0pA06UE) | 1,151 | 11 | 0 | — | — | — | — | — | — |
+| 11/24 23:12 | multiply | [Every escape = 2 new balls](https://www.youtube.com/shorts/BKnFYXR3_BE) | 1,321 | 15 | 0 | — | — | — | — | — | — |
+| 11/24 7:11 | arms | [1 ball, 4 spinning arms](https://www.youtube.com/shorts/qR1avpsgZeo) | 648 | 2 | 1 | 75% | 19.0秒 | 0 | +0 | — | — |
+| 11/23 23:12 | rings | [Can the ball escape 10 rings?](https://www.youtube.com/shorts/ESD_-rhrV90) | 1,712 | 27 | 0 | 86% | 24.0秒 | 0 | +4 | — | — |
+| 11/23 5:42 | glass | [1 cannon vs a wall of glass](https://www.youtube.com/shorts/e2P10hreeGU) | 1,302 | 5 | 0 | 71% | 26.0秒 | 0 | +0 | — | 1 |
+| 11/22 5:29 | battle | [Last ball standing wins](https://www.youtube.com/shorts/iYbTmwm3VQM) | 1,471 | 11 | 0 | 75% | 18.0秒 | 0 | +0 | — | 1 |
+| 11/21 6:48 | gear | [Every squeeze makes it worse](https://www.youtube.com/shorts/sz0c4TY6K5A) | 23,332 | 117 | 9 | 92% | 26.0秒 | 5 | +9 | — | — |
+| 11/20 7:08 | walls | [First to the crown wins](https://www.youtube.com/shorts/NMIfHBVv8os) | 1,258 | 8 | 1 | 81% | 29.0秒 | 0 | +1 | — | — |
+| 11/19 6:51 | colorwar | [More balls or faster growth - which one wins?](https://www.youtube.com/shorts/avHjh_ck6Ok) | 1,503 | 9 | 3 | 67% | 26.0秒 | 0 | +0 | — | — |
 | 11/18 7:14 | towers | [x3 per floor vs x2 per floor vs a huge head start](https://www.youtube.com/shorts/lxaU-MB2SlE) | 1,695 | 12 | 0 | 81% | 33.0秒 | 0 | +1 | — | — |
-| 11/17 7:55 | bricks | [Which color digs through first?](https://www.youtube.com/shorts/0ZMtdKle4x8) | 1,300 | 4 | 0 | 57% | 20.0秒 | 0 | +0 | — | 1 |
+| 11/17 7:55 | bricks | [Which color digs through first?](https://www.youtube.com/shorts/0ZMtdKle4x8) | 1,300 | 4 | 0 | 57% | 21.0秒 | 0 | +0 | — | 1 |
 | 11/15 10:51 | weapon | [DAGGER vs HAMMER - who wins?](https://www.youtube.com/shorts/COidDVDyF2M) | 1,496 | 16 | 0 | 71% | 22.0秒 | 0 | +2 | — | — |
 
 ## 種類ごとの平均
 
 | 種類 | 内容 | 本数 | 1 本あたりの再生数 | 平均視聴率 |
 |---|---|---:|---:|---:|
-| gear | 歯車の2本のアームに挟まれて潰されたボールが2個に増える | 1 | 23,148 | 92% |
-| rings | 回転するリングのすき間から脱出 | 1 | 1,701 | — |
+| gear | 歯車の2本のアームに挟まれて潰されたボールが2個に増える | 1 | 23,332 | 92% |
+| rings | 回転するリングのすき間から脱出 | 1 | 1,712 | 86% |
 | towers | 条件の違う 3 つの塔。10 階を最初に壊すのは？ | 1 | 1,695 | 81% |
-| colorwar | 4 色の陣取り合戦 | 1 | 1,502 | 67% |
+| colorwar | 4 色の陣取り合戦 | 1 | 1,503 | 67% |
 | weapon | 武器を持ったボールの 1 対 1（当てるたびに強くなる） | 1 | 1,496 | 71% |
-| battle | HP 制のボールバトル（最後の 1 個が勝ち） | 1 | 1,454 | 75% |
-| multiply | 脱出するたびにボールが 2 個増える | 1 | 1,313 | — |
+| battle | HP 制のボールバトル（最後の 1 個が勝ち） | 1 | 1,471 | 75% |
+| multiply | 脱出するたびにボールが 2 個増える | 1 | 1,321 | — |
+| glass | 右の砲台がガラスを撃つ。当たったボールは消えてガラスが欠け、外れてくぼみに落ちたボールは倍率ぶん増えて撃ち直される | 1 | 1,302 | 71% |
 | bricks | ブロックを掘り進むレース（4 色） | 1 | 1,300 | 57% |
-| glass | 右の砲台がガラスを撃つ。当たったボールは消えてガラスが欠け、外れてくぼみに落ちたボールは倍率ぶん増えて撃ち直される | 1 | 1,293 | 71% |
-| walls | 王冠を目指して壁で邪魔し合う盤上ゲーム | 1 | 1,245 | 82% |
-| hammer | 左右のピストンと壁にはさまれたボールが 2 個に増える | 1 | 1,127 | — |
-| arms | 四隅のアームと壁に挟まれて潰されたボールが2個に増える | 1 | 433 | — |
+| walls | 王冠を目指して壁で邪魔し合う盤上ゲーム | 1 | 1,258 | 81% |
+| music | 曲に合わせて跳ねるボール（1 バウンド = 1 音） | 1 | 1,182 | — |
+| hammer | 左右のピストンと壁にはさまれたボールが 2 個に増える | 1 | 1,151 | — |
+| cam | 3 つのローラーと壁にはさまれたボールが 2 個に増える。回転はだんだん速くなる | 1 | 929 | — |
+| arms | 四隅のアームと壁に挟まれて潰されたボールが2個に増える | 1 | 648 | 75% |
 
 本数が少ないうちは、1 本の当たり外れで平均が大きく動きます。各種類 3 本以上たまってから比べてください。
 
@@ -51,8 +55,8 @@
 
 | 時間帯 | 本数 | 1 本あたりの再生数 | まん中の値 | 平均視聴率 |
 |---|---:|---:|---:|---:|
-| 朝（7:10 ごろ） | 10 | 3,469 | 1,377 | 74% |
-| 夜（23:10 ごろ） | 2 | 1,507 | 1,507 | — |
+| 朝（7:10 ごろ） | 11 | 3,280 | 1,302 | 74% |
+| 夜（23:10 ごろ） | 3 | 1,405 | 1,321 | 86% |
 
 ## 新しいコメント（YouTube）
 
@@ -64,15 +68,15 @@
 
 | 国 | 再生数 | 割合 | 7:10 の投稿は現地で | 23:10 の投稿は現地で |
 |---|---:|---:|---|---|
-| アメリカ | 8,677 | 32% | 16 時ごろ | 08 時ごろ |
-| ベトナム | 3,292 | 12% | 05 時ごろ | 21 時ごろ |
-| 日本 | 3,037 | 11% | 07 時ごろ | 23 時ごろ |
-| インドネシア | 2,605 | 9% | 05 時ごろ | 21 時ごろ |
-| ブラジル | 1,460 | 5% | 19 時ごろ | 11 時ごろ |
-| インド | 1,062 | 4% | 03 時ごろ | 19 時ごろ |
-| 韓国 | 823 | 3% | 07 時ごろ | 23 時ごろ |
-| ロシア | 629 | 2% | 01 時ごろ | 17 時ごろ |
-| イギリス | 590 | 2% | 22 時ごろ | 14 時ごろ |
-| フィリピン | 553 | 2% | 06 時ごろ | 22 時ごろ |
-| メキシコ | 526 | 2% | 16 時ごろ | 08 時ごろ |
-| トルコ | 430 | 2% | 01 時ごろ | 17 時ごろ |
+| アメリカ | 9,508 | 32% | 16 時ごろ | 08 時ごろ |
+| ベトナム | 3,502 | 12% | 05 時ごろ | 21 時ごろ |
+| 日本 | 3,244 | 11% | 07 時ごろ | 23 時ごろ |
+| インドネシア | 2,698 | 9% | 05 時ごろ | 21 時ごろ |
+| ブラジル | 1,593 | 5% | 19 時ごろ | 11 時ごろ |
+| インド | 1,206 | 4% | 03 時ごろ | 19 時ごろ |
+| 韓国 | 886 | 3% | 07 時ごろ | 23 時ごろ |
+| ロシア | 659 | 2% | 01 時ごろ | 17 時ごろ |
+| イギリス | 624 | 2% | 22 時ごろ | 14 時ごろ |
+| フィリピン | 611 | 2% | 06 時ごろ | 22 時ごろ |
+| メキシコ | 562 | 2% | 16 時ごろ | 08 時ごろ |
+| トルコ | 465 | 2% | 01 時ごろ | 17 時ごろ |
