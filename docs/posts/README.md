@@ -1,6 +1,6 @@
 # 投稿一覧
 
-最終更新: 2026-11-26 07:11 JST ／ 新しい動画が上に並びます
+最終更新: 2026-11-26 23:12 JST ／ 新しい動画が上に並びます
 
 YouTube・TikTok・X へは自動で投稿されます（TikTok と X は、YouTube の約 10 分後に Buffer 経由）。
 下のリンクと文面は、手で投稿し直したいとき用です。
@@ -11,6 +11,27 @@ YouTube・TikTok・X へは自動で投稿されます（TikTok と X は、YouT
 2. 「TikTok の投稿画面を開く」を押し、保存した mp4 を選ぶ
 3. 下の文面の右上にあるコピーボタンを押し、説明欄に貼って投稿する
 4. X も同じ手順で、X 用の文面を貼る
+
+---
+
+## 11/26（木） Ball gets bigger every bounce
+
+- 種類: バウンドするたびに大きくなるボール（当たるたびに曲が進む） ／ 長さ: 29.6秒
+- **[動画をダウンロード](https://github.com/akabone4-hue/himaloop-videos/releases/download/videos/grow_21.mp4)**（grow_21.mp4）
+- YouTube: https://www.youtube.com/shorts/42lrzdKIK1Q
+
+**TikTok** ／ [TikTok の投稿画面を開く](https://www.tiktok.com/tiktokstudio/upload)
+
+````text
+Ball gets bigger every bounce
+#bouncingball #oddlysatisfying #satisfying #simulation #fyp
+````
+
+**X** ／ [X の投稿画面を開く](https://x.com/compose/post)
+
+````text
+Ball gets bigger every bounce
+````
 
 ---
 
