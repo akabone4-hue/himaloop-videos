@@ -1,5 +1,20 @@
 [
  {
+  "posted_at": "2026-11-27T22:12:08+00:00",
+  "type": "merge",
+  "seed": 2,
+  "label_ja": "同じ数字のボールが触れるとまとまって倍になる（1024 まで）",
+  "file": "merge_2.mp4",
+  "duration": 32.1,
+  "title": "Every merge doubles the number",
+  "title_ja": "くっつくたびに数字が倍",
+  "tiktok_caption": "Every merge doubles the number\n#satisfying #merge #simulation #fyp",
+  "x_post": "Every merge doubles the number",
+  "asset_url": "https://github.com/akabone4-hue/himaloop-videos/releases/download/videos/merge_2.mp4",
+  "youtube_url": "https://www.youtube.com/shorts/FayqjvGXXzA",
+  "privacy": "public"
+ },
+ {
   "posted_at": "2026-11-27T14:12:23+00:00",
   "type": "cannons",
   "seed": 3,
